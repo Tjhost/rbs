@@ -6,8 +6,8 @@ ScreenGui.ResetOnSpawn = false
 
 -- Create a Main Frame (Phantom Black background)
 local MainFrame = Instance.new("Frame")
-MainFrame.Size = UDim2.new(0, 500, 0, 400)  -- Size (Width, Height)
-MainFrame.Position = UDim2.new(0.5, -250, 0.5, -200)  -- Center position
+MainFrame.Size = UDim2.new(0, 400, 0, 300)  -- Smaller size (Width, Height)
+MainFrame.Position = UDim2.new(0.5, -200, 0.5, -150)  -- Center position
 MainFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)  -- Black background
 MainFrame.BackgroundTransparency = 0.4  -- Phantom transparency
 MainFrame.BorderSizePixel = 0  -- No borders
@@ -17,7 +17,7 @@ MainFrame.Parent = ScreenGui
 
 -- Add a Title Label
 local TitleLabel = Instance.new("TextLabel")
-TitleLabel.Size = UDim2.new(1, 0, 0, 50)  -- Full width, 50 height
+TitleLabel.Size = UDim2.new(1, 0, 0, 40)  -- Full width, 40 height
 TitleLabel.Position = UDim2.new(0, 0, 0, 0)  -- Top of the frame
 TitleLabel.BackgroundColor3 = Color3.fromRGB(0, 0, 0)  -- Black background
 TitleLabel.BackgroundTransparency = 0.4  -- Phantom transparency
@@ -29,7 +29,7 @@ TitleLabel.Parent = MainFrame
 -- Create Tabs (Side Tabs: Main, Player)
 local TabFrame = Instance.new("Frame")
 TabFrame.Size = UDim2.new(0, 100, 1, -50)  -- Tabs area height (full GUI minus title)
-TabFrame.Position = UDim2.new(0, 0, 0, 50)  -- On the left side
+TabFrame.Position = UDim2.new(0, 0, 0, 40)  -- On the left side
 TabFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
 TabFrame.BackgroundTransparency = 0.4
 TabFrame.Parent = MainFrame
@@ -53,15 +53,15 @@ local PlayerTabButton = createTabButton("Player", UDim2.new(0, 0, 0, 60))
 -- Create Main Tab Content
 local MainTabContent = Instance.new("Frame")
 MainTabContent.Size = UDim2.new(1, -100, 1, -50)  -- Remaining space after title and tabs
-MainTabContent.Position = UDim2.new(0, 100, 0, 50)
+MainTabContent.Position = UDim2.new(0, 100, 0, 40)
 MainTabContent.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
 MainTabContent.BackgroundTransparency = 0.4
 MainTabContent.Parent = MainFrame
 
 -- Button: Fly
 local FlyButton = Instance.new("TextButton")
-FlyButton.Size = UDim2.new(0, 200, 0, 50)
-FlyButton.Position = UDim2.new(0.5, -100, 0, 20)
+FlyButton.Size = UDim2.new(0, 180, 0, 50)
+FlyButton.Position = UDim2.new(0.5, -90, 0, 20)
 FlyButton.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
 FlyButton.BackgroundTransparency = 0.4
 FlyButton.Text = "Fly"
@@ -74,8 +74,8 @@ end)
 
 -- Button: Admin
 local AdminButton = Instance.new("TextButton")
-AdminButton.Size = UDim2.new(0, 200, 0, 50)
-AdminButton.Position = UDim2.new(0.5, -100, 0, 80)
+AdminButton.Size = UDim2.new(0, 180, 0, 50)
+AdminButton.Position = UDim2.new(0.5, -90, 0, 80)
 AdminButton.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
 AdminButton.BackgroundTransparency = 0.4
 AdminButton.Text = "Admin"
@@ -89,25 +89,25 @@ end)
 -- Create Player Tab Content
 local PlayerTabContent = Instance.new("Frame")
 PlayerTabContent.Size = UDim2.new(1, -100, 1, -50)
-PlayerTabContent.Position = UDim2.new(0, 100, 0, 50)
+PlayerTabContent.Position = UDim2.new(0, 100, 0, 40)
 PlayerTabContent.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
 PlayerTabContent.BackgroundTransparency = 0.4
 PlayerTabContent.Visible = false  -- Initially hidden
 PlayerTabContent.Parent = MainFrame
 
 -- Slider: Walkspeed Control
-local WalkSpeedSlider = Instance.new("TextLabel")
-WalkSpeedSlider.Size = UDim2.new(0, 200, 0, 50)
-WalkSpeedSlider.Position = UDim2.new(0.5, -100, 0, 20)
-WalkSpeedSlider.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-WalkSpeedSlider.BackgroundTransparency = 0.4
-WalkSpeedSlider.Text = "Walkspeed: 16"
-WalkSpeedSlider.TextColor3 = Color3.fromRGB(255, 255, 255)
-WalkSpeedSlider.Parent = PlayerTabContent
+local WalkSpeedLabel = Instance.new("TextLabel")
+WalkSpeedLabel.Size = UDim2.new(0, 180, 0, 50)
+WalkSpeedLabel.Position = UDim2.new(0.5, -90, 0, 20)
+WalkSpeedLabel.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+WalkSpeedLabel.BackgroundTransparency = 0.4
+WalkSpeedLabel.Text = "Walkspeed: 16"
+WalkSpeedLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+WalkSpeedLabel.Parent = PlayerTabContent
 
 local WalkSpeedInput = Instance.new("TextBox")
-WalkSpeedInput.Size = UDim2.new(0, 100, 0, 50)
-WalkSpeedInput.Position = UDim2.new(0.5, 20, 0, 20)
+WalkSpeedInput.Size = UDim2.new(0, 80, 0, 50)
+WalkSpeedInput.Position = UDim2.new(0.5, 100, 0, 20)
 WalkSpeedInput.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
 WalkSpeedInput.BackgroundTransparency = 0.4
 WalkSpeedInput.Text = "16"
@@ -115,8 +115,8 @@ WalkSpeedInput.TextColor3 = Color3.fromRGB(255, 255, 255)
 WalkSpeedInput.Parent = PlayerTabContent
 
 local WalkSpeedButton = Instance.new("TextButton")
-WalkSpeedButton.Size = UDim2.new(0, 100, 0, 50)
-WalkSpeedButton.Position = UDim2.new(0.5, -50, 0, 80)
+WalkSpeedButton.Size = UDim2.new(0, 180, 0, 50)
+WalkSpeedButton.Position = UDim2.new(0.5, -90, 0, 80)
 WalkSpeedButton.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
 WalkSpeedButton.BackgroundTransparency = 0.4
 WalkSpeedButton.Text = "Set Walkspeed"
@@ -127,7 +127,7 @@ WalkSpeedButton.MouseButton1Click:Connect(function()
     local speed = tonumber(WalkSpeedInput.Text)
     if speed then
         game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = speed
-        WalkSpeedSlider.Text = "Walkspeed: " .. speed
+        WalkSpeedLabel.Text = "Walkspeed: " .. speed
     end
 end)
 
@@ -160,22 +160,21 @@ CloseButton.MouseButton1Click:Connect(function()
     MainFrame.Visible = false
     -- Create a re-open button here
     local reopenButton = Instance.new("TextButton")
-    reopenButton.Size = UDim2.new(0, 150, 0, 50)
-    reopenButton.Position = UDim2.new(0.5, -75, 1, -60)  -- Bottom center
-    reopenButton.BackgroundColor3 = Color3.fromRGB(0, 0, 0)  -- Black
-    reopenButton.BackgroundTransparency = 0.4  -- Phantom transparency
-    reopenButton.Text = "Reopen GUI"
-    reopenButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+    reopenButton.Size = UDim2.new(0, 60, 0, 60)  -- Circular button size
+    reopenButton.Position = UDim2.new(0.5, -30, 1, -70)  -- Bottom center position
+    reopenButton.BackgroundColor3 = Color3.fromRGB(0, 0, 0)  -- Black background
+    reopenButton.Text = "A"
+    reopenButton.TextColor3 = Color3.fromRGB(255, 255, 255)  -- White text
+    reopenButton.TextScaled = true  -- Scaled text
     reopenButton.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
 
     -- Make the reopen button draggable
+    local dragging = false
     reopenButton.MouseButton1Down:Connect(function()
-        local dragging = true
-        local startPos = reopenButton.Position
+        dragging = true
         local mouse = game.Players.LocalPlayer:GetMouse()
-        
         while dragging do
-            reopenButton.Position = UDim2.new(0, mouse.X - 75, 0, mouse.Y - 25) -- Center the button
+            reopenButton.Position = UDim2.new(0, mouse.X - 30, 0, mouse.Y - 30) -- Center the button
             wait()
         end
     end)
