@@ -1,7 +1,8 @@
 -- Create Screen GUI
 local ScreenGui = Instance.new("ScreenGui")
-ScreenGui.Name = "PhantomBlackGui"
+ScreenGui.Name = "TJGui"
 ScreenGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui") -- Attach to player's GUI
+ScreenGui.ResetOnSpawn = false
 
 -- Create a Main Frame (Phantom Black background)
 local MainFrame = Instance.new("Frame")
@@ -10,6 +11,8 @@ MainFrame.Position = UDim2.new(0.5, -250, 0.5, -200)  -- Center position
 MainFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)  -- Black background
 MainFrame.BackgroundTransparency = 0.4  -- Phantom transparency
 MainFrame.BorderSizePixel = 0  -- No borders
+MainFrame.Active = true
+MainFrame.Draggable = true  -- Makes the GUI movable
 MainFrame.Parent = ScreenGui
 
 -- Add a Title Label
@@ -18,21 +21,21 @@ TitleLabel.Size = UDim2.new(1, 0, 0, 50)  -- Full width, 50 height
 TitleLabel.Position = UDim2.new(0, 0, 0, 0)  -- Top of the frame
 TitleLabel.BackgroundColor3 = Color3.fromRGB(0, 0, 0)  -- Black background
 TitleLabel.BackgroundTransparency = 0.4  -- Phantom transparency
-TitleLabel.Text = "Phantom Black GUI"
+TitleLabel.Text = "TJ GUI"
 TitleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)  -- White text
 TitleLabel.TextSize = 24  -- Text size
 TitleLabel.Parent = MainFrame
 
--- Create Tabs (Main, Player)
+-- Create Tabs (Side Tabs: Main, Player)
 local TabFrame = Instance.new("Frame")
-TabFrame.Size = UDim2.new(1, 0, 0, 30)  -- Tabs area height 30
-TabFrame.Position = UDim2.new(0, 0, 0, 50)  -- Below title
+TabFrame.Size = UDim2.new(0, 100, 1, -50)  -- Tabs area height (full GUI minus title)
+TabFrame.Position = UDim2.new(0, 0, 0, 50)  -- On the left side
 TabFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
 TabFrame.BackgroundTransparency = 0.4
 TabFrame.Parent = MainFrame
 
 local MainTabButton = Instance.new("TextButton")
-MainTabButton.Size = UDim2.new(0, 100, 0, 30)
+MainTabButton.Size = UDim2.new(1, 0, 0, 50)
 MainTabButton.Position = UDim2.new(0, 0, 0, 0)
 MainTabButton.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
 MainTabButton.BackgroundTransparency = 0.4
@@ -41,8 +44,8 @@ MainTabButton.TextColor3 = Color3.fromRGB(255, 255, 255)
 MainTabButton.Parent = TabFrame
 
 local PlayerTabButton = Instance.new("TextButton")
-PlayerTabButton.Size = UDim2.new(0, 100, 0, 30)
-PlayerTabButton.Position = UDim2.new(0, 100, 0, 0)
+PlayerTabButton.Size = UDim2.new(1, 0, 0, 50)
+PlayerTabButton.Position = UDim2.new(0, 0, 0, 60)
 PlayerTabButton.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
 PlayerTabButton.BackgroundTransparency = 0.4
 PlayerTabButton.Text = "Player"
@@ -51,8 +54,8 @@ PlayerTabButton.Parent = TabFrame
 
 -- Create Main Tab Content
 local MainTabContent = Instance.new("Frame")
-MainTabContent.Size = UDim2.new(1, 0, 1, -80)  -- Remaining space after tabs and title
-MainTabContent.Position = UDim2.new(0, 0, 0, 80)
+MainTabContent.Size = UDim2.new(1, -100, 1, -50)  -- Remaining space after title and tabs
+MainTabContent.Position = UDim2.new(0, 100, 0, 50)
 MainTabContent.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
 MainTabContent.BackgroundTransparency = 0.4
 MainTabContent.Parent = MainFrame
@@ -87,8 +90,8 @@ end)
 
 -- Create Player Tab Content
 local PlayerTabContent = Instance.new("Frame")
-PlayerTabContent.Size = UDim2.new(1, 0, 1, -80)
-PlayerTabContent.Position = UDim2.new(0, 0, 0, 80)
+PlayerTabContent.Size = UDim2.new(1, -100, 1, -50)
+PlayerTabContent.Position = UDim2.new(0, 100, 0, 50)
 PlayerTabContent.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
 PlayerTabContent.BackgroundTransparency = 0.4
 PlayerTabContent.Visible = false  -- Initially hidden
