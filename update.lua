@@ -26,7 +26,7 @@ TitleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)  -- White text
 TitleLabel.TextSize = 24  -- Text size
 TitleLabel.Parent = MainFrame
 
--- Create Tabs (Side Tabs: Main, Player)
+-- Create Tabs (Side Tabs: Main, Player, Clothes)
 local TabFrame = Instance.new("Frame")
 TabFrame.Size = UDim2.new(0, 100, 1, -50)  -- Tabs area height (full GUI minus title)
 TabFrame.Position = UDim2.new(0, 0, 0, 50)  -- On the left side
@@ -34,23 +34,22 @@ TabFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
 TabFrame.BackgroundTransparency = 0.4
 TabFrame.Parent = MainFrame
 
-local MainTabButton = Instance.new("TextButton")
-MainTabButton.Size = UDim2.new(1, 0, 0, 50)
-MainTabButton.Position = UDim2.new(0, 0, 0, 0)
-MainTabButton.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-MainTabButton.BackgroundTransparency = 0.4
-MainTabButton.Text = "Main"
-MainTabButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-MainTabButton.Parent = TabFrame
+-- Tab Buttons
+local function createTabButton(name, position)
+    local TabButton = Instance.new("TextButton")
+    TabButton.Size = UDim2.new(1, 0, 0, 50)
+    TabButton.Position = position
+    TabButton.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+    TabButton.BackgroundTransparency = 0.4
+    TabButton.Text = name
+    TabButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+    TabButton.Parent = TabFrame
+    return TabButton
+end
 
-local PlayerTabButton = Instance.new("TextButton")
-PlayerTabButton.Size = UDim2.new(1, 0, 0, 50)
-PlayerTabButton.Position = UDim2.new(0, 0, 0, 60)
-PlayerTabButton.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-PlayerTabButton.BackgroundTransparency = 0.4
-PlayerTabButton.Text = "Player"
-PlayerTabButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-PlayerTabButton.Parent = TabFrame
+local MainTabButton = createTabButton("Main", UDim2.new(0, 0, 0, 0))
+local PlayerTabButton = createTabButton("Player", UDim2.new(0, 0, 0, 60))
+local ClothesTabButton = createTabButton("Clothes", UDim2.new(0, 0, 0, 120))
 
 -- Create Main Tab Content
 local MainTabContent = Instance.new("Frame")
@@ -107,56 +106,94 @@ WalkSpeedSlider.Text = "Walkspeed: 16"
 WalkSpeedSlider.TextColor3 = Color3.fromRGB(255, 255, 255)
 WalkSpeedSlider.Parent = PlayerTabContent
 
-local sliderValue = 16
-WalkSpeedSlider.MouseButton1Click:Connect(function()
-    sliderValue = sliderValue + 10  -- Increment walkspeed
-    if sliderValue > 100 then sliderValue = 16 end
-    WalkSpeedSlider.Text = "Walkspeed: " .. sliderValue
-    game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = sliderValue
+local WalkSpeedInput = Instance.new("TextBox")
+WalkSpeedInput.Size = UDim2.new(0, 100, 0, 50)
+WalkSpeedInput.Position = UDim2.new(0.5, 20, 0, 20)
+WalkSpeedInput.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+WalkSpeedInput.BackgroundTransparency = 0.4
+WalkSpeedInput.Text = "16"
+WalkSpeedInput.TextColor3 = Color3.fromRGB(255, 255, 255)
+WalkSpeedInput.Parent = PlayerTabContent
+
+local WalkSpeedButton = Instance.new("TextButton")
+WalkSpeedButton.Size = UDim2.new(0, 100, 0, 50)
+WalkSpeedButton.Position = UDim2.new(0.5, -50, 0, 80)
+WalkSpeedButton.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+WalkSpeedButton.BackgroundTransparency = 0.4
+WalkSpeedButton.Text = "Set Walkspeed"
+WalkSpeedButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+WalkSpeedButton.Parent = PlayerTabContent
+
+WalkSpeedButton.MouseButton1Click:Connect(function()
+    local speed = tonumber(WalkSpeedInput.Text)
+    if speed then
+        game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = speed
+        WalkSpeedSlider.Text = "Walkspeed: " .. speed
+    end
 end)
 
--- Tab Switching Logic
-MainTabButton.MouseButton1Click:Connect(function()
-    MainTabContent.Visible = true
-    PlayerTabContent.Visible = false
-end)
+-- Clothes Tab Content
+local ClothesTabContent = Instance.new("Frame")
+ClothesTabContent.Size = UDim2.new(1, -100, 1, -50)
+ClothesTabContent.Position = UDim2.new(0, 100, 0, 50)
+ClothesTabContent.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+ClothesTabContent.BackgroundTransparency = 0.4
+ClothesTabContent.Visible = false  -- Initially hidden
+ClothesTabContent.Parent = MainFrame
 
-PlayerTabButton.MouseButton1Click:Connect(function()
+-- Image: Clothes
+local ClothesImage = Instance.new("ImageLabel")
+ClothesImage.Size = UDim2.new(1, 0, 1, 0)  -- Full size of the tab
+ClothesImage.BackgroundTransparency = 1  -- Invisible background
+ClothesImage.Image = "https://www.pinterest.com/pin/794885402964949622/"  -- Use your actual image link
+ClothesImage.Parent = ClothesTabContent
+
+-- Function to handle tab switching
+local function switchTab(tab)
     MainTabContent.Visible = false
-    PlayerTabContent.Visible = true
-end)
+    PlayerTabContent.Visible = false
+    ClothesTabContent.Visible = false
 
--- Create an "X" Button to Close the GUI
+    if tab == "Main" then
+        MainTabContent.Visible = true
+    elseif tab == "Player" then
+        PlayerTabContent.Visible = true
+    elseif tab == "Clothes" then
+        ClothesTabContent.Visible = true
+    end
+end
+
+-- Connect tab button clicks
+MainTabButton.MouseButton1Click:Connect(function() switchTab("Main") end)
+PlayerTabButton.MouseButton1Click:Connect(function() switchTab("Player") end)
+ClothesTabButton.MouseButton1Click:Connect(function() switchTab("Clothes") end)
+
+-- Close Button
 local CloseButton = Instance.new("TextButton")
-CloseButton.Size = UDim2.new(0, 50, 0, 50)
-CloseButton.Position = UDim2.new(1, -55, 0, 5)
-CloseButton.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
-CloseButton.BackgroundTransparency = 0.4
+CloseButton.Size = UDim2.new(0, 30, 0, 30)
+CloseButton.Position = UDim2.new(1, -40, 0, 10)  -- Positioning in the top-right corner
+CloseButton.BackgroundColor3 = Color3.fromRGB(255, 0, 0)  -- Red color
 CloseButton.Text = "X"
-CloseButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-CloseButton.TextSize = 20
+CloseButton.TextColor3 = Color3.fromRGB(255, 255, 255)  -- White text
 CloseButton.Parent = MainFrame
 
--- Close GUI function
 CloseButton.MouseButton1Click:Connect(function()
-    MainFrame.Visible = false  -- Hide the GUI when "X" is clicked
-    ReopenButton.Visible = true  -- Show the reopen button when closed
+    MainFrame.Visible = false
+    -- Optionally create a re-open button here
+    local reopenButton = Instance.new("TextButton")
+    reopenButton.Size = UDim2.new(0, 100, 0, 50)
+    reopenButton.Position = UDim2.new(0.5, -50, 0.5, -25)  -- Centering
+    reopenButton.BackgroundColor3 = Color3.fromRGB(0, 0, 0)  -- Black
+    reopenButton.BackgroundTransparency = 0.4  -- Phantom transparency
+    reopenButton.Text = "Reopen GUI"
+    reopenButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+    reopenButton.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+
+    reopenButton.MouseButton1Click:Connect(function()
+        MainFrame.Visible = true
+        reopenButton:Destroy()  -- Remove the reopen button after clicking
+    end)
 end)
 
--- Create a Reopen Button (Small box on screen)
-local ReopenButton = Instance.new("TextButton")
-ReopenButton.Size = UDim2.new(0, 100, 0, 50)  -- Size for reopen button
-ReopenButton.Position = UDim2.new(0, 10, 1, -60)  -- Bottom left of screen
-ReopenButton.BackgroundColor3 = Color3.fromRGB(0, 0, 0)  -- Black with phantom transparency
-ReopenButton.BackgroundTransparency = 0.4
-ReopenButton.Text = "Reopen GUI"
-ReopenButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-ReopenButton.TextSize = 14
-ReopenButton.Parent = ScreenGui
-ReopenButton.Visible = false  -- Initially hidden
-
--- Reopen the GUI when Reopen Button is clicked
-ReopenButton.MouseButton1Click:Connect(function()
-    MainFrame.Visible = true  -- Show the GUI again
-    ReopenButton.Visible = false  -- Hide the reopen button
-end)
+-- Initialize with Main tab
+switchTab("Main")
