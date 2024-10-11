@@ -6,7 +6,7 @@ ScreenGui.ResetOnSpawn = false
 
 -- Create a Main Frame (Phantom Black background)
 local MainFrame = Instance.new("Frame")
-MainFrame.Size = UDim2.new(0, 400, 0, 300)  -- Smaller size (Width, Height)
+MainFrame.Size = UDim2.new(0, 400, 0, 300)  -- Size of the GUI
 MainFrame.Position = UDim2.new(0.5, -200, 0.5, -150)  -- Center position
 MainFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)  -- Black background
 MainFrame.BackgroundTransparency = 0.4  -- Phantom transparency
@@ -158,35 +158,36 @@ CloseButton.Parent = MainFrame
 
 CloseButton.MouseButton1Click:Connect(function()
     MainFrame.Visible = false
-    -- Create a re-open button here
-    local reopenButton = Instance.new("TextButton")
-    reopenButton.Size = UDim2.new(0, 60, 0, 60)  -- Circular button size
-    reopenButton.Position = UDim2.new(0.5, -30, 1, -70)  -- Bottom center position
-    reopenButton.BackgroundColor3 = Color3.fromRGB(0, 0, 0)  -- Black background
-    reopenButton.Text = "A"
-    reopenButton.TextColor3 = Color3.fromRGB(255, 255, 255)  -- White text
-    reopenButton.TextScaled = true  -- Scaled text
-    reopenButton.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+end)
 
-    -- Make the reopen button draggable
-    local dragging = false
-    reopenButton.MouseButton1Down:Connect(function()
-        dragging = true
-        local mouse = game.Players.LocalPlayer:GetMouse()
-        while dragging do
-            reopenButton.Position = UDim2.new(0, mouse.X - 30, 0, mouse.Y - 30) -- Center the button
-            wait()
-        end
-    end)
+-- Reopen Button
+local reopenButton = Instance.new("TextButton")
+reopenButton.Size = UDim2.new(0, 60, 0, 60)  -- Size of the reopen button
+reopenButton.Position = UDim2.new(0.5, -30, 1, -70)  -- Bottom center position, 3 inches above the bottom
+reopenButton.BackgroundColor3 = Color3.fromRGB(0, 0, 0)  -- Black background
+reopenButton.Text = "A"  -- Text "A"
+reopenButton.TextColor3 = Color3.fromRGB(255, 255, 255)  -- White text
+reopenButton.TextScaled = true  -- Scaled text
+reopenButton.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
 
-    reopenButton.MouseButton1Up:Connect(function()
-        dragging = false
-    end)
+reopenButton.MouseButton1Click:Connect(function()
+    MainFrame.Visible = true
+    reopenButton:Destroy()  -- Remove the reopen button after clicking
+end)
 
-    reopenButton.MouseButton1Click:Connect(function()
-        MainFrame.Visible = true
-        reopenButton:Destroy()  -- Remove the reopen button after clicking
-    end)
+-- Make the reopen button draggable
+local dragging = false
+reopenButton.MouseButton1Down:Connect(function()
+    dragging = true
+    local mouse = game.Players.LocalPlayer:GetMouse()
+    while dragging do
+        reopenButton.Position = UDim2.new(0, mouse.X - 30, 0, mouse.Y - 30) -- Center the button
+        wait()
+    end
+end)
+
+reopenButton.MouseButton1Up:Connect(function()
+    dragging = false
 end)
 
 -- Initialize with Main tab
