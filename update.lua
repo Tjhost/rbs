@@ -6,8 +6,8 @@ ScreenGui.ResetOnSpawn = false
 
 -- Create a Main Frame (Phantom Black background)
 local MainFrame = Instance.new("Frame")
-MainFrame.Size = UDim2.new(0, 400, 0, 300)  -- Size of the GUI
-MainFrame.Position = UDim2.new(0.5, -200, 0.5, -150)  -- Center position
+MainFrame.Size = UDim2.new(0, 300, 0, 200)  -- Reduced size of the GUI
+MainFrame.Position = UDim2.new(0.5, -150, 0.5, -100)  -- Center position
 MainFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)  -- Black background
 MainFrame.BackgroundTransparency = 0.4  -- Phantom transparency
 MainFrame.BorderSizePixel = 0  -- No borders
@@ -17,19 +17,19 @@ MainFrame.Parent = ScreenGui
 
 -- Add a Title Label
 local TitleLabel = Instance.new("TextLabel")
-TitleLabel.Size = UDim2.new(1, 0, 0, 40)  -- Full width, 40 height
+TitleLabel.Size = UDim2.new(1, 0, 0, 30)  -- Full width, 30 height
 TitleLabel.Position = UDim2.new(0, 0, 0, 0)  -- Top of the frame
 TitleLabel.BackgroundColor3 = Color3.fromRGB(0, 0, 0)  -- Black background
 TitleLabel.BackgroundTransparency = 0.4  -- Phantom transparency
 TitleLabel.Text = "TJ GUI"
 TitleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)  -- White text
-TitleLabel.TextSize = 24  -- Text size
+TitleLabel.TextSize = 20  -- Text size
 TitleLabel.Parent = MainFrame
 
 -- Create Tabs (Side Tabs: Main, Player)
 local TabFrame = Instance.new("Frame")
-TabFrame.Size = UDim2.new(0, 100, 1, -50)  -- Tabs area height (full GUI minus title)
-TabFrame.Position = UDim2.new(0, 0, 0, 40)  -- On the left side
+TabFrame.Size = UDim2.new(0, 80, 1, -50)  -- Tabs area height (full GUI minus title)
+TabFrame.Position = UDim2.new(0, 0, 0, 30)  -- On the left side
 TabFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
 TabFrame.BackgroundTransparency = 0.4
 TabFrame.Parent = MainFrame
@@ -37,7 +37,7 @@ TabFrame.Parent = MainFrame
 -- Tab Buttons
 local function createTabButton(name, position)
     local TabButton = Instance.new("TextButton")
-    TabButton.Size = UDim2.new(1, 0, 0, 50)
+    TabButton.Size = UDim2.new(1, 0, 0, 40)
     TabButton.Position = position
     TabButton.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
     TabButton.BackgroundTransparency = 0.4
@@ -48,20 +48,20 @@ local function createTabButton(name, position)
 end
 
 local MainTabButton = createTabButton("Main", UDim2.new(0, 0, 0, 0))
-local PlayerTabButton = createTabButton("Player", UDim2.new(0, 0, 0, 60))
+local PlayerTabButton = createTabButton("Player", UDim2.new(0, 0, 0, 40))
 
 -- Create Main Tab Content
 local MainTabContent = Instance.new("Frame")
-MainTabContent.Size = UDim2.new(1, -100, 1, -50)  -- Remaining space after title and tabs
-MainTabContent.Position = UDim2.new(0, 100, 0, 40)
+MainTabContent.Size = UDim2.new(1, -80, 1, -30)  -- Remaining space after title and tabs
+MainTabContent.Position = UDim2.new(0, 80, 0, 30)
 MainTabContent.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
 MainTabContent.BackgroundTransparency = 0.4
 MainTabContent.Parent = MainFrame
 
 -- Button: Fly
 local FlyButton = Instance.new("TextButton")
-FlyButton.Size = UDim2.new(0, 180, 0, 50)
-FlyButton.Position = UDim2.new(0.5, -90, 0, 20)
+FlyButton.Size = UDim2.new(0, 120, 0, 40)
+FlyButton.Position = UDim2.new(0.5, -60, 0, 20)
 FlyButton.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
 FlyButton.BackgroundTransparency = 0.4
 FlyButton.Text = "Fly"
@@ -74,8 +74,8 @@ end)
 
 -- Button: Admin
 local AdminButton = Instance.new("TextButton")
-AdminButton.Size = UDim2.new(0, 180, 0, 50)
-AdminButton.Position = UDim2.new(0.5, -90, 0, 80)
+AdminButton.Size = UDim2.new(0, 120, 0, 40)
+AdminButton.Position = UDim2.new(0.5, -60, 0, 70)
 AdminButton.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
 AdminButton.BackgroundTransparency = 0.4
 AdminButton.Text = "Admin"
@@ -88,8 +88,8 @@ end)
 
 -- Create Player Tab Content
 local PlayerTabContent = Instance.new("Frame")
-PlayerTabContent.Size = UDim2.new(1, -100, 1, -50)
-PlayerTabContent.Position = UDim2.new(0, 100, 0, 40)
+PlayerTabContent.Size = UDim2.new(1, -80, 1, -30)
+PlayerTabContent.Position = UDim2.new(0, 80, 0, 30)
 PlayerTabContent.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
 PlayerTabContent.BackgroundTransparency = 0.4
 PlayerTabContent.Visible = false  -- Initially hidden
@@ -97,8 +97,8 @@ PlayerTabContent.Parent = MainFrame
 
 -- Slider: Walkspeed Control
 local WalkSpeedLabel = Instance.new("TextLabel")
-WalkSpeedLabel.Size = UDim2.new(0, 180, 0, 50)
-WalkSpeedLabel.Position = UDim2.new(0.5, -90, 0, 20)
+WalkSpeedLabel.Size = UDim2.new(0, 120, 0, 40)
+WalkSpeedLabel.Position = UDim2.new(0.5, -60, 0, 20)
 WalkSpeedLabel.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
 WalkSpeedLabel.BackgroundTransparency = 0.4
 WalkSpeedLabel.Text = "Walkspeed: 16"
@@ -106,8 +106,8 @@ WalkSpeedLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
 WalkSpeedLabel.Parent = PlayerTabContent
 
 local WalkSpeedInput = Instance.new("TextBox")
-WalkSpeedInput.Size = UDim2.new(0, 80, 0, 50)
-WalkSpeedInput.Position = UDim2.new(0.5, 100, 0, 20)
+WalkSpeedInput.Size = UDim2.new(0, 60, 0, 40)
+WalkSpeedInput.Position = UDim2.new(0.5, 70, 0, 20)
 WalkSpeedInput.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
 WalkSpeedInput.BackgroundTransparency = 0.4
 WalkSpeedInput.Text = "16"
@@ -115,8 +115,8 @@ WalkSpeedInput.TextColor3 = Color3.fromRGB(255, 255, 255)
 WalkSpeedInput.Parent = PlayerTabContent
 
 local WalkSpeedButton = Instance.new("TextButton")
-WalkSpeedButton.Size = UDim2.new(0, 180, 0, 50)
-WalkSpeedButton.Position = UDim2.new(0.5, -90, 0, 80)
+WalkSpeedButton.Size = UDim2.new(0, 120, 0, 40)
+WalkSpeedButton.Position = UDim2.new(0.5, -60, 0, 70)
 WalkSpeedButton.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
 WalkSpeedButton.BackgroundTransparency = 0.4
 WalkSpeedButton.Text = "Set Walkspeed"
@@ -156,8 +156,11 @@ CloseButton.Text = "X"
 CloseButton.TextColor3 = Color3.fromRGB(255, 255, 255)  -- White text
 CloseButton.Parent = MainFrame
 
+local guiVisible = true -- Track visibility of the GUI
+
 CloseButton.MouseButton1Click:Connect(function()
-    MainFrame.Visible = false
+    guiVisible = not guiVisible  -- Toggle visibility
+    MainFrame.Visible = guiVisible
 end)
 
 -- Reopen Button
@@ -170,7 +173,9 @@ reopenButton.TextColor3 = Color3.fromRGB(255, 255, 255)  -- White text
 reopenButton.TextScaled = true  -- Scaled text
 reopenButton.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
 
+-- Connect reopen button functionality
 reopenButton.MouseButton1Click:Connect(function()
+    guiVisible = true
     MainFrame.Visible = true
     reopenButton:Destroy()  -- Remove the reopen button after clicking
 end)
