@@ -26,7 +26,7 @@ TitleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)  -- White text
 TitleLabel.TextSize = 24  -- Text size
 TitleLabel.Parent = MainFrame
 
--- Create Tabs (Side Tabs: Main, Player, Clothes)
+-- Create Tabs (Side Tabs: Main, Player)
 local TabFrame = Instance.new("Frame")
 TabFrame.Size = UDim2.new(0, 100, 1, -50)  -- Tabs area height (full GUI minus title)
 TabFrame.Position = UDim2.new(0, 0, 0, 50)  -- On the left side
@@ -49,7 +49,6 @@ end
 
 local MainTabButton = createTabButton("Main", UDim2.new(0, 0, 0, 0))
 local PlayerTabButton = createTabButton("Player", UDim2.new(0, 0, 0, 60))
-local ClothesTabButton = createTabButton("Clothes", UDim2.new(0, 0, 0, 120))
 
 -- Create Main Tab Content
 local MainTabContent = Instance.new("Frame")
@@ -132,41 +131,21 @@ WalkSpeedButton.MouseButton1Click:Connect(function()
     end
 end)
 
--- Clothes Tab Content
-local ClothesTabContent = Instance.new("Frame")
-ClothesTabContent.Size = UDim2.new(1, -100, 1, -50)
-ClothesTabContent.Position = UDim2.new(0, 100, 0, 50)
-ClothesTabContent.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-ClothesTabContent.BackgroundTransparency = 0.4
-ClothesTabContent.Visible = false  -- Initially hidden
-ClothesTabContent.Parent = MainFrame
-
--- Image: Clothes
-local ClothesImage = Instance.new("ImageLabel")
-ClothesImage.Size = UDim2.new(1, 0, 1, 0)  -- Full size of the tab
-ClothesImage.BackgroundTransparency = 1  -- Invisible background
-ClothesImage.Image = "https://www.pinterest.com/pin/794885402964949622/"  -- Use your actual image link
-ClothesImage.Parent = ClothesTabContent
-
 -- Function to handle tab switching
 local function switchTab(tab)
     MainTabContent.Visible = false
     PlayerTabContent.Visible = false
-    ClothesTabContent.Visible = false
 
     if tab == "Main" then
         MainTabContent.Visible = true
     elseif tab == "Player" then
         PlayerTabContent.Visible = true
-    elseif tab == "Clothes" then
-        ClothesTabContent.Visible = true
     end
 end
 
 -- Connect tab button clicks
 MainTabButton.MouseButton1Click:Connect(function() switchTab("Main") end)
 PlayerTabButton.MouseButton1Click:Connect(function() switchTab("Player") end)
-ClothesTabButton.MouseButton1Click:Connect(function() switchTab("Clothes") end)
 
 -- Close Button
 local CloseButton = Instance.new("TextButton")
@@ -179,15 +158,31 @@ CloseButton.Parent = MainFrame
 
 CloseButton.MouseButton1Click:Connect(function()
     MainFrame.Visible = false
-    -- Optionally create a re-open button here
+    -- Create a re-open button here
     local reopenButton = Instance.new("TextButton")
-    reopenButton.Size = UDim2.new(0, 100, 0, 50)
-    reopenButton.Position = UDim2.new(0.5, -50, 0.5, -25)  -- Centering
+    reopenButton.Size = UDim2.new(0, 150, 0, 50)
+    reopenButton.Position = UDim2.new(0.5, -75, 1, -60)  -- Bottom center
     reopenButton.BackgroundColor3 = Color3.fromRGB(0, 0, 0)  -- Black
     reopenButton.BackgroundTransparency = 0.4  -- Phantom transparency
     reopenButton.Text = "Reopen GUI"
     reopenButton.TextColor3 = Color3.fromRGB(255, 255, 255)
     reopenButton.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+
+    -- Make the reopen button draggable
+    reopenButton.MouseButton1Down:Connect(function()
+        local dragging = true
+        local startPos = reopenButton.Position
+        local mouse = game.Players.LocalPlayer:GetMouse()
+        
+        while dragging do
+            reopenButton.Position = UDim2.new(0, mouse.X - 75, 0, mouse.Y - 25) -- Center the button
+            wait()
+        end
+    end)
+
+    reopenButton.MouseButton1Up:Connect(function()
+        dragging = false
+    end)
 
     reopenButton.MouseButton1Click:Connect(function()
         MainFrame.Visible = true
