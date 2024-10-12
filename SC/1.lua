@@ -1,66 +1,58 @@
--- Load the Rayfield Library
 local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
-getgenv().SecureMode = true -- Enable secure mode if needed
 
--- Create the main window
 local Window = Rayfield:CreateWindow({
-    Name = "TJ's Script Executor",
-    LoadingTitle = "Loading Rayfield Interface",
-    LoadingSubtitle = "by Sirius",
-    ConfigurationSaving = {
-        Enabled = true,
-        FolderName = nil, -- Custom folder for saving configurations
-        FileName = "RayfieldConfig" -- Name of the config file
-    },
-    KeySystem = true, -- Enable key system
-    KeySettings = {
-        Title = "Key Required",
-        Subtitle = "Enter the key to access the script",
-        Note = "Key is DJ", -- Display the required key
-        FileName = "KeyConfig", -- Unique config file for the key
-        SaveKey = true, -- Save the user's key
-        Key = {"DJ"} -- Accepted keys
-    },
+   Name = "TJ",
+   LoadingTitle = "TJ Interface ",
+   LoadingSubtitle = "by TJaltf4",
+   ConfigurationSaving = {
+      Enabled = true,
+      FolderName = nil, -- Create a custom folder for your hub/game
+      FileName = "TJaltf4"
+   },
+   Discord = {
+      Enabled = false,
+      Invite = "noinvitelink", -- The Discord invite code, do not include discord.gg/. E.g. discord.gg/ABCD would be ABCD
+      RememberJoins = true -- Set this to false to make them join the discord every time they load it up
+   },
+   KeySystem = false, -- Set this to true to use our key system
+   KeySettings = {
+      Title = "Untitled",
+      Subtitle = "Key System",
+      Note = "No method of obtaining the key is provided",
+      FileName = "Key", -- It is recommended to use something unique as other scripts using Rayfield may overwrite your key file
+      SaveKey = true, -- The user's key will be saved, but if you change the key, they will be unable to use your script
+      GrabKeyFromSite = false, -- If this is true, set Key below to the RAW site you would like Rayfield to get the key from
+      Key = {"Hello"} -- List of keys that will be accepted by the system, can be RAW file links (pastebin, github etc) or simple strings ("hello","key22")
+   }
 })
 
--- Create the main tab
-local MainTab = Window:CreateTab("Main", 4483362458)
+-- Uncomment this block to enable the notification
+-- Rayfield:Notify({
+--    Title = "Done",
+--    Content = "",
+--    Duration = 4.5,
+--    Image = 4483362458,
+--    Actions = { -- Notification Buttons
+--       Ignore = {
+--          Name = "Okay!",
+--          Callback = function()
+--          print("The user tapped Okay!")
+--       end
+--    },
+-- },
+-- })
 
--- Variables for player
-local player = game.Players.LocalPlayer
-local character = player.Character or player.CharacterAdded:Wait()
-local humanoid = character:WaitForChild("Humanoid")
+local MainTab = Window:CreateTab("Main", 4483362458) -- Title, Image
+local Section = MainTab:CreateSection("Main")
 
--- Function to toggle no clip
-local noClipEnabled = false
-
-local function toggleNoClip()
-    noClipEnabled = not noClipEnabled
-    for _, part in ipairs(character:GetDescendants()) do
-        if part:IsA("BasePart") then
-            part.CanCollide = not noClipEnabled
-        end
-    end
-end
-
--- Button to enable Fly
-MainTab:CreateButton({
-    Name = "Fly",
-    Callback = function()
-        loadstring(game:HttpGet('https://pastebin.com/raw/MsL78SwX'))()
-    end,
+local Button = MainTab:CreateButton({
+   Name = "Fly",
+   Callback = function()
+      loadstring(game:HttpGet('https://pastebin.com/raw/MsL78SwX'))()
+   end,
 })
 
--- Button to toggle No Clip
-MainTab:CreateToggle({
-    Name = "No Clip",
-    CurrentValue = false,
-    Callback = function(state)
-        toggleNoClip()
-    end,
-})
-
--- Walk Speed Control
+-- Walk Speed Slider
 MainTab:CreateSlider({
     Name = "Walkspeed",
     Range = {16, 500}, -- Min and Max values
@@ -68,11 +60,13 @@ MainTab:CreateSlider({
     Suffix = "Walk Speed",
     CurrentValue = 16, -- Initial value
     Callback = function(value)
-        humanoid.WalkSpeed = value
+        if humanoid then
+            humanoid.WalkSpeed = value
+        end
     end,
 })
 
--- Jump Power Control
+-- Jump Power Slider
 MainTab:CreateSlider({
     Name = "Jump Power",
     Range = {50, 500}, -- Min and Max values
@@ -80,54 +74,37 @@ MainTab:CreateSlider({
     Suffix = "Jump Power",
     CurrentValue = 50, -- Initial value
     Callback = function(value)
-        humanoid.JumpPower = value
+        if humanoid then
+            humanoid.JumpPower = value
+        end
     end,
 })
 
--- Superhuman Toggle
+-- Super-Human Toggle
 MainTab:CreateToggle({
     Name = "Super-Human",
     CurrentValue = false,
     Callback = function(state)
-        if state then
-            humanoid.WalkSpeed = 120
-            humanoid.JumpPower = 120
-        else
-            humanoid.WalkSpeed = 16
-            humanoid.JumpPower = 50
-        end
-    end,
-})
-
--- Teleport to Player Feature
-MainTab:CreateDropdown({
-    Name = "Teleport to Player",
-    Options = function()
-        local players = {}
-        for _, v in ipairs(game.Players:GetPlayers()) do
-            if v ~= player then
-                table.insert(players, v.Name)
+        if humanoid then
+            if state then
+                humanoid.WalkSpeed = 120
+                humanoid.JumpPower = 120
+            else
+                humanoid.WalkSpeed = 16
+                humanoid.JumpPower = 50
             end
         end
-        return players
-    end,
-    Callback = function(selectedPlayer)
-        local targetPlayer = game.Players:FindFirstChild(selectedPlayer)
-        if targetPlayer and targetPlayer.Character then
-            character:SetPrimaryPartCFrame(targetPlayer.Character.PrimaryPart.CFrame)
-        end
     end,
 })
 
--- Create the Admin tab
-local AdminTab = Window:CreateTab("Admin", 4483362458)
+local AdminTab = Window:CreateTab("Admin", 4483362458) -- Title, Image
+local Section = AdminTab:CreateSection("Admin")
 
--- Admin Button to execute Admin script
-AdminTab:CreateButton({
-    Name = "Admin Command",
-    Callback = function()
-        loadstring(game:HttpGet('https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source'))() -- Admin script
-    end,
+local Button = AdminTab:CreateButton({
+   Name = "Admin",
+   Callback = function()
+      loadstring(game:HttpGet('https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source'))()
+   end,
 })
 
 -- Load configuration
