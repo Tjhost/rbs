@@ -132,58 +132,36 @@ end
 MainTabButton.MouseButton1Click:Connect(function() switchTab("Main") end)
 PlayerTabButton.MouseButton1Click:Connect(function() switchTab("Player") end)
 
--- Close Button (X) in a separate GUI
-local CloseGui = Instance.new("ScreenGui")
-CloseGui.Name = "CloseGui"
-CloseGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")  -- Attach to Player GUI
+-- Create the Open/Close Button (A)
+local OpenCloseButton = Instance.new("TextButton")
+OpenCloseButton.Size = UDim2.new(0, 50, 0, 50)  -- Smaller button size
+OpenCloseButton.Position = UDim2.new(0.5, -25, 1, -100)  -- Positioned 3 inches above bottom center
+OpenCloseButton.BackgroundColor3 = Color3.fromRGB(0, 0, 0)  -- Black background
+OpenCloseButton.Text = "A"  -- Text "A"
+OpenCloseButton.TextColor3 = Color3.fromRGB(255, 255, 255)  -- White text
+OpenCloseButton.TextScaled = true  -- Scaled text
+OpenCloseButton.Parent = ScreenGui
 
-local CloseButton = Instance.new("TextButton")
-CloseButton.Size = UDim2.new(0, 30, 0, 30)
-CloseButton.Position = UDim2.new(1, -40, 0, 10)  -- Positioning in the top-right corner
-CloseButton.BackgroundColor3 = Color3.fromRGB(255, 0, 0)  -- Red color
-CloseButton.Text = "X"
-CloseButton.TextColor3 = Color3.fromRGB(255, 255, 255)  -- White text
-CloseButton.Parent = CloseGui
-
--- Reopen Button (A) in a separate GUI
-local OpenGui = Instance.new("ScreenGui")
-OpenGui.Name = "OpenGui"
-OpenGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")  -- Attach to Player GUI
-
-local OpenButton = Instance.new("TextButton")
-OpenButton.Size = UDim2.new(0, 60, 0, 60)  -- Size of the open button
-OpenButton.Position = UDim2.new(0.5, -30, 1, -70)  -- Bottom center position, 3 inches above the bottom
-OpenButton.BackgroundColor3 = Color3.fromRGB(0, 0, 0)  -- Black background
-OpenButton.Text = "A"  -- Text "A"
-OpenButton.TextColor3 = Color3.fromRGB(255, 255, 255)  -- White text
-OpenButton.TextScaled = true  -- Scaled text
-OpenButton.Parent = OpenGui
-
--- Button Logic for Closing and Reopening GUI
+-- Toggle the GUI's visibility
 local guiVisible = true
 
-CloseButton.MouseButton1Click:Connect(function()
-    guiVisible = false
-    MainFrame.Visible = false  -- Hide the main GUI
+OpenCloseButton.MouseButton1Click:Connect(function()
+    guiVisible = not guiVisible
+    MainFrame.Visible = guiVisible
 end)
 
-OpenButton.MouseButton1Click:Connect(function()
-    guiVisible = true
-    MainFrame.Visible = true  -- Show the main GUI
-end)
-
--- Make the reopen button draggable
+-- Make the Open/Close Button draggable
 local dragging = false
-OpenButton.MouseButton1Down:Connect(function()
+OpenCloseButton.MouseButton1Down:Connect(function()
     dragging = true
     local mouse = game.Players.LocalPlayer:GetMouse()
     while dragging do
-        OpenButton.Position = UDim2.new(0, mouse.X - 30, 0, mouse.Y - 30) -- Center the button
+        OpenCloseButton.Position = UDim2.new(0, mouse.X - 25, 0, mouse.Y - 25) -- Center the button
         wait()
     end
 end)
 
-OpenButton.MouseButton1Up:Connect(function()
+OpenCloseButton.MouseButton1Up:Connect(function()
     dragging = false
 end)
 
