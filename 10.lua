@@ -13,6 +13,7 @@ MainFrame.BackgroundTransparency = 0.4  -- Semi-transparent
 MainFrame.BorderSizePixel = 0  -- No border
 MainFrame.Active = true
 MainFrame.Draggable = true  -- Movable GUI
+MainFrame.Visible = false  -- Initially hidden
 MainFrame.Parent = ScreenGui
 
 -- Create the Title Label for the GUI
@@ -50,6 +51,7 @@ end
 local MainTabButton = createTabButton("Main", UDim2.new(0, 0, 0, 0))
 local PlayerTabButton = createTabButton("Player", UDim2.new(0, 0, 0, 40))
 local AdminTabButton = createTabButton("Admin", UDim2.new(0, 0, 0, 80))
+local ClothesTabButton = createTabButton("Clothes", UDim2.new(0, 0, 0, 120))
 
 -- Create Main Tab Content
 local MainTabContent = Instance.new("Frame")
@@ -159,16 +161,118 @@ end
 
 createSpeedAndJumpControls()  -- Call the function to create controls
 
+-- Create Clothes Tab Content
+local ClothesTabContent = Instance.new("Frame")
+ClothesTabContent.Size = UDim2.new(1, -80, 1, -30)
+ClothesTabContent.Position = UDim2.new(0, 80, 0, 30)
+ClothesTabContent.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+ClothesTabContent.BackgroundTransparency = 0.4
+ClothesTabContent.Visible = false  -- Initially hidden
+ClothesTabContent.Parent = MainFrame
+
+-- Function to add clothing options
+local function createClothesOptions()
+    -- Shirt Options
+    local ShirtLabel = Instance.new("TextLabel")
+    ShirtLabel.Size = UDim2.new(1, 0, 0, 40)
+    ShirtLabel.Position = UDim2.new(0, 0, 0, 20)
+    ShirtLabel.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+    ShirtLabel.BackgroundTransparency = 0.4
+    ShirtLabel.Text = "Shirt ID:"
+    ShirtLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+    ShirtLabel.Parent = ClothesTabContent
+
+    local ShirtInput = Instance.new("TextBox")
+    ShirtInput.Size = UDim2.new(0, 200, 0, 40)
+    ShirtInput.Position = UDim2.new(0, 0, 0, 60)
+    ShirtInput.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+    ShirtInput.BackgroundTransparency = 0.4
+    ShirtInput.Text = ""
+    ShirtInput.TextColor3 = Color3.fromRGB(255, 255, 255)
+    ShirtInput.Parent = ClothesTabContent
+
+    local ShirtButton = Instance.new("TextButton")
+    ShirtButton.Size = UDim2.new(0, 100, 0, 40)
+    ShirtButton.Position = UDim2.new(0, 220, 0, 60)
+    ShirtButton.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+    ShirtButton.BackgroundTransparency = 0.4
+    ShirtButton.Text = "Apply Shirt"
+    ShirtButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+    ShirtButton.Parent = ClothesTabContent
+
+    ShirtButton.MouseButton1Click:Connect(function()
+        local shirtID = ShirtInput.Text
+        if shirtID ~= "" then
+            local shirt = Instance.new("Shirt")
+            shirt.ShirtTemplate = "rbxassetid://" .. shirtID
+            shirt.Parent = game.Players.LocalPlayer.Character
+        end
+    end)
+
+    -- Pants Options
+    local PantsLabel = Instance.new("TextLabel")
+    PantsLabel.Size = UDim2.new(1, 0, 0, 40)
+    PantsLabel.Position = UDim2.new(0, 0, 0, 120)
+    PantsLabel.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+    PantsLabel.BackgroundTransparency = 0.4
+    PantsLabel.Text = "Pants ID:"
+    PantsLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+    PantsLabel.Parent = ClothesTabContent
+
+    local PantsInput = Instance.new("TextBox")
+    PantsInput.Size = UDim2.new(0, 200, 0, 40)
+    PantsInput.Position = UDim2.new(0, 0, 0, 160)
+    PantsInput.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+    PantsInput.BackgroundTransparency = 0.4
+    PantsInput.Text = ""
+    PantsInput.TextColor3 = Color3.fromRGB(255, 255, 255)
+    PantsInput.Parent = ClothesTabContent
+
+    local PantsButton = Instance.new("TextButton")
+    PantsButton.Size = UDim2.new(0, 100, 0, 40)
+    PantsButton.Position = UDim2.new(0, 220, 0, 160)
+    PantsButton.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+    PantsButton.BackgroundTransparency = 0.4
+    PantsButton.Text = "Apply Pants"
+    PantsButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+    PantsButton.Parent = ClothesTabContent
+
+    PantsButton.MouseButton1Click:Connect(function()
+        local pantsID = PantsInput.Text
+        if pantsID ~= "" then
+            local pants = Instance.new("Pants")
+            pants.PantsTemplate = "rbxassetid://" .. pantsID
+            pants.Parent = game.Players.LocalPlayer.Character
+        end
+    end)
+end
+
+createClothesOptions()  -- Call the function to create clothing options
+
 -- Show/Hide Tab Contents based on button clicks
 local function switchTab(tab)
     MainTabContent.Visible = tab == "Main"
     PlayerTabContent.Visible = tab == "Player"
-    -- You can add AdminTabContent handling here if needed
+    ClothesTabContent.Visible = tab == "Clothes"
 end
 
 MainTabButton.MouseButton1Click:Connect(function() switchTab("Main") end)
 PlayerTabButton.MouseButton1Click:Connect(function() switchTab("Player") end)
-AdminTabButton.MouseButton1Click:Connect(function() switchTab("Admin") end)
+ClothesTabButton.MouseButton1Click:Connect(function() switchTab("Clothes") end)
+
+-- Create Open/Close Button
+local OpenButton = Instance.new("TextButton")
+OpenButton.Size = UDim2.new(0, 100, 0, 40)
+OpenButton.Position = UDim2.new(0.5, -50, 0, 10)
+OpenButton.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+OpenButton.BackgroundTransparency = 0.4
+OpenButton.Text = "Open GUI"
+OpenButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+OpenButton.Parent = ScreenGui
+
+OpenButton.MouseButton1Click:Connect(function()
+    MainFrame.Visible = not MainFrame.Visible  -- Toggle visibility
+end)
 
 -- Show the GUI on startup
 ScreenGui.Enabled = true
