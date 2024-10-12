@@ -34,7 +34,7 @@ local userInputService = game:GetService("UserInputService")
 local flying = false
 local speed = 50 -- Default fly speed
 
--- Notification function
+-- Function to notify the user
 local function notify(message)
     local notification = Instance.new("TextLabel")
     notification.Parent = player.PlayerGui -- Parent to PlayerGui for visibility
@@ -93,6 +93,18 @@ MainTab:CreateButton({
     Name = "Toggle Fly",
     Callback = function()
         toggleFly()
+    end,
+})
+
+-- Fly Speed Control
+MainTab:CreateSlider({
+    Name = "Fly Speed",
+    Range = {50, 500}, -- Min and Max values
+    Increment = 1, -- Increment value
+    Suffix = "Fly Speed",
+    CurrentValue = 50, -- Initial value
+    Callback = function(value)
+        speed = value -- Update fly speed
     end,
 })
 
