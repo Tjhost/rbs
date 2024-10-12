@@ -30,7 +30,7 @@ TitleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)  -- White text
 TitleLabel.TextSize = 20
 TitleLabel.Parent = MainFrame
 
--- Create Tabs (Side Tabs: Main, Player, Admin)
+-- Create Tabs (Side Tabs: Main, Player)
 local TabFrame = Instance.new("Frame")
 TabFrame.Size = UDim2.new(0, 80, 1, -50)  -- Tabs area height (full GUI minus title)
 TabFrame.Position = UDim2.new(0, 0, 0, 30)  -- On the left side
@@ -62,6 +62,15 @@ MainTabContent.Position = UDim2.new(0, 80, 0, 30)
 MainTabContent.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
 MainTabContent.BackgroundTransparency = 0.4
 MainTabContent.Parent = MainFrame
+
+-- Add the image from the provided URL
+local ImageUrl = "https://raw.githubusercontent.com/Tjhost/rbs/main/pngtree-letter-t-cork-transparent-background-png-image_5963257.jpg"
+local ImageLabel = Instance.new("ImageLabel")
+ImageLabel.Size = UDim2.new(0, 200, 0, 200)  -- Adjust the size of the image
+ImageLabel.Position = UDim2.new(0.5, -100, 0.5, -100)  -- Center the image
+ImageLabel.BackgroundTransparency = 1  -- Make background transparent
+ImageLabel.Image = ImageUrl  -- Set image from GitHub URL
+ImageLabel.Parent = MainTabContent  -- Add image to Main Tab
 
 -- Button: Fly
 local FlyButton = Instance.new("TextButton")
@@ -158,7 +167,7 @@ JumpPowerButton.MouseButton1Click:Connect(function()
     end
 end)
 
--- Create Admin Tab Content
+-- Create Admin Tab Content (No separate panel)
 local AdminTabContent = Instance.new("Frame")
 AdminTabContent.Size = UDim2.new(1, -80, 1, -30)
 AdminTabContent.Position = UDim2.new(0, 80, 0, 30)
@@ -167,28 +176,20 @@ AdminTabContent.BackgroundTransparency = 0.4
 AdminTabContent.Visible = false  -- Initially hidden
 AdminTabContent.Parent = MainFrame
 
--- Example Admin Button (to be replaced with actual functionality)
+-- Admin Button that executes the specified Lua script
 local AdminButton = Instance.new("TextButton")
 AdminButton.Size = UDim2.new(0, 120, 0, 40)
 AdminButton.Position = UDim2.new(0.5, -60, 0, 20)
 AdminButton.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
 AdminButton.BackgroundTransparency = 0.4
-AdminButton.Text = "Admin Action"
+AdminButton.Text = "Execute Admin Script"
 AdminButton.TextColor3 = Color3.fromRGB(255, 255, 255)
 AdminButton.Parent = AdminTabContent
 
 AdminButton.MouseButton1Click:Connect(function()
-    print("Admin action executed!")  -- Replace with actual admin action
+    -- Execute the admin script here
+    loadstring(game:HttpGet("https://raw.githubusercontent.com/Tjhost/rbs/refs/heads/main/SC/1.lua", true))()
 end)
-
--- Add the image from GitHub URL
-local ImageUrl = "https://raw.githubusercontent.com/Tjhost/rbs/main/pngtree-letter-t-cork-transparent-background-png-image_5963257.jpg"  -- Change this to your GitHub image URL
-local ImageLabel = Instance.new("ImageLabel")
-ImageLabel.Size = UDim2.new(0, 200, 0, 200)  -- Adjust the size of the image
-ImageLabel.Position = UDim2.new(0.5, -100, 0.5, -100)  -- Center the image
-ImageLabel.BackgroundTransparency = 1  -- Make background transparent
-ImageLabel.Image = ImageUrl  -- Set image from GitHub URL
-ImageLabel.Parent = MainTabContent  -- Add image to Main Tab
 
 -- Tab Button Click Handlers
 MainTabButton.MouseButton1Click:Connect(function()
@@ -211,6 +212,3 @@ end)
 
 -- Show Main Tab by default
 MainTabContent.Visible = true
-
--- Show the GUI
-ScreenGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
