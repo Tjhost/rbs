@@ -1,3 +1,8 @@
+-- Load Fluent Framework and Addons
+local Fluent = loadstring(game:HttpGet("https://github.com/dawid-scripts/Fluent/releases/latest/download/main.lua"))()
+local SaveManager = loadstring(game:HttpGet("https://raw.githubusercontent.com/dawid-scripts/Fluent/master/Addons/SaveManager.lua"))()
+local InterfaceManager = loadstring(game:HttpGet("https://raw.githubusercontent.com/dawid-scripts/Fluent/master/Addons/InterfaceManager.lua"))()
+
 -- Create Screen GUI for the Main Frame (TJ GUI)
 local ScreenGui = Instance.new("ScreenGui")
 ScreenGui.Name = "TJGui"
@@ -146,22 +151,11 @@ JumpPowerButton.TextColor3 = Color3.fromRGB(255, 255, 255)
 JumpPowerButton.Parent = PlayerTabContent
 
 JumpPowerButton.MouseButton1Click:Connect(function()
-    local power = tonumber(JumpPowerInput.Text)
-    if power then
-        game.Players.LocalPlayer.Character.Humanoid.JumpPower = power
-        JumpPowerLabel.Text = "Jump Power: " .. power
+    local jumpPower = tonumber(JumpPowerInput.Text)
+    if jumpPower then
+        game.Players.LocalPlayer.Character.Humanoid.JumpPower = jumpPower
+        JumpPowerLabel.Text = "Jump Power: " .. jumpPower
     end
-end)
-
--- Tab Switching Logic
-MainTabButton.MouseButton1Click:Connect(function()
-    MainTabContent.Visible = true
-    PlayerTabContent.Visible = false
-end)
-
-PlayerTabButton.MouseButton1Click:Connect(function()
-    MainTabContent.Visible = false
-    PlayerTabContent.Visible = true
 end)
 
 -- Create Admin Tab Content
@@ -195,6 +189,25 @@ ImageLabel.Position = UDim2.new(0.5, -100, 0.5, -100)  -- Center the image
 ImageLabel.BackgroundTransparency = 1  -- Make background transparent
 ImageLabel.Image = ImageUrl  -- Set image from GitHub URL
 ImageLabel.Parent = MainTabContent  -- Add image to Main Tab
+
+-- Tab Button Click Handlers
+MainTabButton.MouseButton1Click:Connect(function()
+    MainTabContent.Visible = true
+    PlayerTabContent.Visible = false
+    AdminTabContent.Visible = false
+end)
+
+PlayerTabButton.MouseButton1Click:Connect(function()
+    MainTabContent.Visible = false
+    PlayerTabContent.Visible = true
+    AdminTabContent.Visible = false
+end)
+
+AdminTabButton.MouseButton1Click:Connect(function()
+    MainTabContent.Visible = false
+    PlayerTabContent.Visible = false
+    AdminTabContent.Visible = true
+end)
 
 -- Show Main Tab by default
 MainTabContent.Visible = true
