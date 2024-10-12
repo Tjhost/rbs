@@ -7,7 +7,7 @@ local Window = Rayfield:CreateWindow({
    ConfigurationSaving = {
       Enabled = true,
       FolderName = nil, -- Create a custom folder for your hub/game
-      FileName = "1023isa1" -- Unique FileName
+      FileName = "rghr7gh84h93utg8yhuefg87h4ebgf783hr88gry" -- Unique FileName
    },
    Discord = {
       Enabled = false,
@@ -19,7 +19,7 @@ local Window = Rayfield:CreateWindow({
       Title = "Untitled",
       Subtitle = "Key System",
       Note = "No method of obtaining the key is provided",
-      FileName = "1023isa1", -- Unique FileName for the Key
+      FileName = "rghr7gh84h93utg8yhuefg87h4ebgf783hr88gry", -- Unique FileName for the Key
       SaveKey = true, -- The user's key will be saved, but if you change the key, they will be unable to use your script
       GrabKeyFromSite = false, -- If this is true, set Key below to the RAW site you would like Rayfield to get the key from
       Key = {"Hello"} -- List of keys that will be accepted by the system, can be RAW file links (pastebin, github etc) or simple strings ("hello","key22")
@@ -106,6 +106,13 @@ MainTab:CreateToggle({
         end
     end,
 })
+
+local Button = MainTab:CreateButton({
+    Name = "spectate player",
+    Callback = function()
+        loadstring(game:HttpGet('https://pastebin.com/raw/zjAa6w2c'))()
+    end,
+ })
 
 local AdminTab = Window:CreateTab("Admin", 4483362458) -- Title, Image
 local Section = AdminTab:CreateSection("Admin")
