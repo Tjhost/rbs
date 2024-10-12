@@ -4,10 +4,10 @@ ScreenGui.Name = "TJGui"
 ScreenGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")  -- Attach to Player GUI
 ScreenGui.ResetOnSpawn = false
 
--- Create the Main Frame (Phantom Black background)
+-- Create the Main Frame (Phantom Black background, larger size)
 local MainFrame = Instance.new("Frame")
-MainFrame.Size = UDim2.new(0, 300, 0, 200)  -- GUI size
-MainFrame.Position = UDim2.new(0.5, -150, 0.5, -100)  -- Center the GUI
+MainFrame.Size = UDim2.new(0, 400, 0, 300)  -- Larger GUI size
+MainFrame.Position = UDim2.new(0.5, -200, 0.5, -150)  -- Center the GUI
 MainFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)  -- Phantom black
 MainFrame.BackgroundTransparency = 0.4  -- Semi-transparent
 MainFrame.BorderSizePixel = 0  -- No border
@@ -25,7 +25,7 @@ TitleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)  -- White text
 TitleLabel.TextSize = 20
 TitleLabel.Parent = MainFrame
 
--- Create Tabs (Side Tabs: Main, Player)
+-- Create Tabs (Side Tabs: Main, Player, Admin)
 local TabFrame = Instance.new("Frame")
 TabFrame.Size = UDim2.new(0, 80, 1, -50)  -- Tabs area height (full GUI minus title)
 TabFrame.Position = UDim2.new(0, 0, 0, 30)  -- On the left side
@@ -48,6 +48,7 @@ end
 
 local MainTabButton = createTabButton("Main", UDim2.new(0, 0, 0, 0))
 local PlayerTabButton = createTabButton("Player", UDim2.new(0, 0, 0, 40))
+local AdminTabButton = createTabButton("Admin", UDim2.new(0, 0, 0, 80))
 
 -- Create Main Tab Content
 local MainTabContent = Instance.new("Frame")
@@ -71,7 +72,7 @@ FlyButton.MouseButton1Click:Connect(function()
     loadstring(game:HttpGet('https://pastebin.com/raw/MsL78SwX'))()  -- Fly script
 end)
 
--- Create Player Tab Content
+-- Create Player Tab Content (with Walk and Jump Speed Controls)
 local PlayerTabContent = Instance.new("Frame")
 PlayerTabContent.Size = UDim2.new(1, -80, 1, -30)
 PlayerTabContent.Position = UDim2.new(0, 80, 0, 30)
@@ -80,7 +81,7 @@ PlayerTabContent.BackgroundTransparency = 0.4
 PlayerTabContent.Visible = false  -- Initially hidden
 PlayerTabContent.Parent = MainFrame
 
--- Slider: Walkspeed Control
+-- Walkspeed Control
 local WalkSpeedLabel = Instance.new("TextLabel")
 WalkSpeedLabel.Size = UDim2.new(0, 120, 0, 40)
 WalkSpeedLabel.Position = UDim2.new(0.5, -60, 0, 20)
@@ -116,54 +117,113 @@ WalkSpeedButton.MouseButton1Click:Connect(function()
     end
 end)
 
--- Function to handle tab switching
-local function switchTab(tab)
-    MainTabContent.Visible = false
-    PlayerTabContent.Visible = false
+-- JumpPower Control
+local JumpPowerLabel = Instance.new("TextLabel")
+JumpPowerLabel.Size = UDim2.new(0, 120, 0, 40)
+JumpPowerLabel.Position = UDim2.new(0.5, -60, 0, 130)
+JumpPowerLabel.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+JumpPowerLabel.BackgroundTransparency = 0.4
+JumpPowerLabel.Text = "Jump Power: 50"
+JumpPowerLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+JumpPowerLabel.Parent = PlayerTabContent
 
-    if tab == "Main" then
-        MainTabContent.Visible = true
-    elseif tab == "Player" then
-        PlayerTabContent.Visible = true
+local JumpPowerInput = Instance.new("TextBox")
+JumpPowerInput.Size = UDim2.new(0, 60, 0, 40)
+JumpPowerInput.Position = UDim2.new(0.5, 70, 0, 130)
+JumpPowerInput.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+JumpPowerInput.BackgroundTransparency = 0.4
+JumpPowerInput.Text = "50"
+JumpPowerInput.TextColor3 = Color3.fromRGB(255, 255, 255)
+JumpPowerInput.Parent = PlayerTabContent
+
+local JumpPowerButton = Instance.new("TextButton")
+JumpPowerButton.Size = UDim2.new(0, 120, 0, 40)
+JumpPowerButton.Position = UDim2.new(0.5, -60, 0, 180)
+JumpPowerButton.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+JumpPowerButton.BackgroundTransparency = 0.4
+JumpPowerButton.Text = "Set Jump Power"
+JumpPowerButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+JumpPowerButton.Parent = PlayerTabContent
+
+JumpPowerButton.MouseButton1Click:Connect(function()
+    local power = tonumber(JumpPowerInput.Text)
+    if power then
+        game.Players.LocalPlayer.Character.Humanoid.JumpPower = power
+        JumpPowerLabel.Text = "Jump Power: " .. power
     end
-end
+end)
 
--- Connect tab button clicks
-MainTabButton.MouseButton1Click:Connect(function() switchTab("Main") end)
-PlayerTabButton.MouseButton1Click:Connect(function() switchTab("Player") end)
+-- Tab Switching Logic
+MainTabButton.MouseButton1Click:Connect(function()
+    MainTabContent.Visible = true
+    PlayerTabContent.Visible = false
+end)
 
--- Create the Open/Close Button (A)
+PlayerTabButton.MouseButton1Click:Connect(function()
+    MainTabContent.Visible = false
+    PlayerTabContent.Visible = true
+end)
+
+-- Admin Menu (Add it back)
+AdminTabButton.MouseButton1Click:Connect(function()
+    loadstring(game:HttpGet('https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source'))()
+end)
+
+-- Close Button (X) and Smaller Open/Close Button (A)
+local CloseButton = Instance.new("TextButton")
+CloseButton.Size = UDim2.new(0, 30, 0, 30)
+CloseButton.Position = UDim2.new(1, -35, 0, 5)
+CloseButton.Text = "X"
+CloseButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+CloseButton.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+CloseButton.BackgroundTransparency = 0.4
+CloseButton.Parent = MainFrame
+
 local OpenCloseButton = Instance.new("TextButton")
-OpenCloseButton.Size = UDim2.new(0, 50, 0, 50)  -- Smaller button size
-OpenCloseButton.Position = UDim2.new(0.5, -25, 1, -100)  -- Positioned 3 inches above bottom center
-OpenCloseButton.BackgroundColor3 = Color3.fromRGB(0, 0, 0)  -- Black background
-OpenCloseButton.Text = "A"  -- Text "A"
-OpenCloseButton.TextColor3 = Color3.fromRGB(255, 255, 255)  -- White text
-OpenCloseButton.TextScaled = true  -- Scaled text
+OpenCloseButton.Size = UDim2.new(0, 50, 0, 50)  -- Smaller 'A' Button
+OpenCloseButton.Position = UDim2.new(0.5, -25, 1, -100)  -- 3 inches from bottom middle
+OpenCloseButton.Text = "A"
+OpenCloseButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+OpenCloseButton.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+OpenCloseButton.BackgroundTransparency = 0.4
 OpenCloseButton.Parent = ScreenGui
 
--- Toggle the GUI's visibility
-local guiVisible = true
-
-OpenCloseButton.MouseButton1Click:Connect(function()
-    guiVisible = not guiVisible
-    MainFrame.Visible = guiVisible
+CloseButton.MouseButton1Click:Connect(function()
+    MainFrame.Visible = false
 end)
 
--- Make the Open/Close Button draggable
-local dragging = false
-OpenCloseButton.MouseButton1Down:Connect(function()
-    dragging = true
-    local mouse = game.Players.LocalPlayer:GetMouse()
-    while dragging do
-        OpenCloseButton.Position = UDim2.new(0, mouse.X - 25, 0, mouse.Y - 25) -- Center the button
-        wait()
+OpenCloseButton.MouseButton1Click:Connect(function()
+    MainFrame.Visible = not MainFrame.Visible
+end)
+
+-- Movable GUI Logic
+local dragging, dragInput, dragStart, startPos
+MainFrame.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 then
+        dragging = true
+        dragStart = input.Position
+        startPos = MainFrame.Position
+
+        input.Changed:Connect(function()
+            if input.UserInputState == Enum.UserInputState.End then
+                dragging = false
+            end
+        end)
     end
 end)
 
-OpenCloseButton.MouseButton1Up:Connect(function()
-    dragging = false
+MainFrame.InputChanged:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseMovement then
+        dragInput = input
+    end
 end)
 
--- Initialize with Main tab
-switchTab("Main")
+game:GetService("UserInputService").InputChanged:Connect(function(input)
+    if input == dragInput and dragging then
+        local delta = input.Position - dragStart
+        MainFrame.Position = UDim2.new(
+            startPos.X.Scale, startPos.X.Offset + delta.X,
+            startPos.Y.Scale, startPos.Y.Offset + delta.Y
+        )
+    end
+end)
