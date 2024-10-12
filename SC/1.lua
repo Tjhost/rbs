@@ -1,214 +1,150 @@
--- Load Fluent Framework and Addons
-local Fluent = loadstring(game:HttpGet("https://github.com/dawid-scripts/Fluent/releases/latest/download/main.lua"))()
-local SaveManager = loadstring(game:HttpGet("https://raw.githubusercontent.com/dawid-scripts/Fluent/master/Addons/SaveManager.lua"))()
-local InterfaceManager = loadstring(game:HttpGet("https://raw.githubusercontent.com/dawid-scripts/Fluent/master/Addons/InterfaceManager.lua"))()
+-- Load the Rayfield Library
+local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
+getgenv().SecureMode = true -- Enable secure mode if needed
 
--- Create Screen GUI for the Main Frame (TJ GUI)
-local ScreenGui = Instance.new("ScreenGui")
-ScreenGui.Name = "TJGui"
-ScreenGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")  -- Attach to Player GUI
-ScreenGui.ResetOnSpawn = false
+-- Create the main window
+local Window = Rayfield:CreateWindow({
+    Name = "Rayfield Fly Example",
+    LoadingTitle = "Loading Rayfield Interface",
+    LoadingSubtitle = "by Sirius",
+    ConfigurationSaving = {
+        Enabled = true,
+        FolderName = nil, -- Custom folder for saving configurations
+        FileName = "RayfieldConfig" -- Name of the config file
+    },
+    KeySystem = true, -- Enable key system
+    KeySettings = {
+        Title = "Key Required",
+        Subtitle = "Enter the key to access the script",
+        Note = "Key: DJ", -- Display the required key
+        FileName = "KeyConfig", -- Unique config file for the key
+        SaveKey = true, -- Save the user's key
+        Key = {"DJ"} -- Accepted keys
+    },
+})
 
--- Create the Main Frame (Phantom Black background, larger size)
-local MainFrame = Instance.new("Frame")
-MainFrame.Size = UDim2.new(0, 400, 0, 300)  -- Larger GUI size
-MainFrame.Position = UDim2.new(0.5, -200, 0.5, -150)  -- Center the GUI
-MainFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)  -- Phantom black
-MainFrame.BackgroundTransparency = 0.4  -- Semi-transparent
-MainFrame.BorderSizePixel = 0  -- No border
-MainFrame.Active = true
-MainFrame.Draggable = true  -- Movable GUI
-MainFrame.Parent = ScreenGui
+-- Create the main tab
+local MainTab = Window:CreateTab("Main", 4483362458)
 
--- Create the Title Label for the GUI
-local TitleLabel = Instance.new("TextLabel")
-TitleLabel.Size = UDim2.new(1, 0, 0, 30)  -- Full width, 30px height
-TitleLabel.BackgroundColor3 = Color3.fromRGB(0, 0, 0)  -- Phantom black background
-TitleLabel.BackgroundTransparency = 0.4  -- Semi-transparent
-TitleLabel.Text = "TJ GUI"
-TitleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)  -- White text
-TitleLabel.TextSize = 20
-TitleLabel.Parent = MainFrame
+-- Variables for flying
+local player = game.Players.LocalPlayer
+local character = player.Character or player.CharacterAdded:Wait()
+local humanoid = character:WaitForChild("Humanoid")
+local userInputService = game:GetService("UserInputService")
+local flying = false
+local speed = 50 -- Default fly speed
 
--- Create Tabs (Side Tabs: Main, Player)
-local TabFrame = Instance.new("Frame")
-TabFrame.Size = UDim2.new(0, 80, 1, -50)  -- Tabs area height (full GUI minus title)
-TabFrame.Position = UDim2.new(0, 0, 0, 30)  -- On the left side
-TabFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-TabFrame.BackgroundTransparency = 0.4
-TabFrame.Parent = MainFrame
+-- Notification function
+local function notify(message)
+    local notification = Instance.new("TextLabel")
+    notification.Parent = player.PlayerGui -- Parent to PlayerGui for visibility
+    notification.Size = UDim2.new(0, 300, 0, 50)
+    notification.Position = UDim2.new(0.5, -150, 0.1, 0)
+    notification.BackgroundColor3 = Color3.fromRGB(255, 255, 0)
+    notification.Text = message
+    notification.TextColor3 = Color3.fromRGB(0, 0, 0)
+    notification.TextScaled = true
+    notification.AnchorPoint = Vector2.new(0.5, 0)
 
--- Tab Buttons
-local function createTabButton(name, position)
-    local TabButton = Instance.new("TextButton")
-    TabButton.Size = UDim2.new(1, 0, 0, 40)
-    TabButton.Position = position
-    TabButton.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-    TabButton.BackgroundTransparency = 0.4
-    TabButton.Text = name
-    TabButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-    TabButton.Parent = TabFrame
-    return TabButton
+    wait(3) -- Show notification for 3 seconds
+    notification:Destroy()
 end
 
-local MainTabButton = createTabButton("Main", UDim2.new(0, 0, 0, 0))
-local PlayerTabButton = createTabButton("Player", UDim2.new(0, 0, 0, 40))
-local AdminTabButton = createTabButton("Admin", UDim2.new(0, 0, 0, 80))
+-- Notify that the script has been executed
+notify("Script Executed")
 
--- Create Main Tab Content
-local MainTabContent = Instance.new("Frame")
-MainTabContent.Size = UDim2.new(1, -80, 1, -30)  -- Remaining space after title and tabs
-MainTabContent.Position = UDim2.new(0, 80, 0, 30)
-MainTabContent.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-MainTabContent.BackgroundTransparency = 0.4
-MainTabContent.Parent = MainFrame
-
--- Add the image from the provided URL
-local ImageUrl = "https://raw.githubusercontent.com/Tjhost/rbs/main/pngtree-letter-t-cork-transparent-background-png-image_5963257.jpg"
-local ImageLabel = Instance.new("ImageLabel")
-ImageLabel.Size = UDim2.new(0, 200, 0, 200)  -- Adjust the size of the image
-ImageLabel.Position = UDim2.new(0.5, -100, 0.5, -100)  -- Center the image
-ImageLabel.BackgroundTransparency = 1  -- Make background transparent
-ImageLabel.Image = ImageUrl  -- Set image from GitHub URL
-ImageLabel.Parent = MainTabContent  -- Add image to Main Tab
-
--- Button: Fly
-local FlyButton = Instance.new("TextButton")
-FlyButton.Size = UDim2.new(0, 120, 0, 40)
-FlyButton.Position = UDim2.new(0.5, -60, 0, 20)
-FlyButton.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-FlyButton.BackgroundTransparency = 0.4
-FlyButton.Text = "Fly"
-FlyButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-FlyButton.Parent = MainTabContent
-
-FlyButton.MouseButton1Click:Connect(function()
-    loadstring(game:HttpGet('https://pastebin.com/raw/MsL78SwX'))()  -- Fly script
-end)
-
--- Create Player Tab Content (with Walk and Jump Speed Controls)
-local PlayerTabContent = Instance.new("Frame")
-PlayerTabContent.Size = UDim2.new(1, -80, 1, -30)
-PlayerTabContent.Position = UDim2.new(0, 80, 0, 30)
-PlayerTabContent.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-PlayerTabContent.BackgroundTransparency = 0.4
-PlayerTabContent.Visible = false  -- Initially hidden
-PlayerTabContent.Parent = MainFrame
-
--- Walkspeed Control
-local WalkSpeedLabel = Instance.new("TextLabel")
-WalkSpeedLabel.Size = UDim2.new(0, 120, 0, 40)
-WalkSpeedLabel.Position = UDim2.new(0.5, -60, 0, 20)
-WalkSpeedLabel.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-WalkSpeedLabel.BackgroundTransparency = 0.4
-WalkSpeedLabel.Text = "Walkspeed: 16"
-WalkSpeedLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-WalkSpeedLabel.Parent = PlayerTabContent
-
-local WalkSpeedInput = Instance.new("TextBox")
-WalkSpeedInput.Size = UDim2.new(0, 60, 0, 40)
-WalkSpeedInput.Position = UDim2.new(0.5, 70, 0, 20)
-WalkSpeedInput.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-WalkSpeedInput.BackgroundTransparency = 0.4
-WalkSpeedInput.Text = "16"
-WalkSpeedInput.TextColor3 = Color3.fromRGB(255, 255, 255)
-WalkSpeedInput.Parent = PlayerTabContent
-
-local WalkSpeedButton = Instance.new("TextButton")
-WalkSpeedButton.Size = UDim2.new(0, 120, 0, 40)
-WalkSpeedButton.Position = UDim2.new(0.5, -60, 0, 70)
-WalkSpeedButton.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-WalkSpeedButton.BackgroundTransparency = 0.4
-WalkSpeedButton.Text = "Set Walkspeed"
-WalkSpeedButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-WalkSpeedButton.Parent = PlayerTabContent
-
-WalkSpeedButton.MouseButton1Click:Connect(function()
-    local speed = tonumber(WalkSpeedInput.Text)
-    if speed then
-        game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = speed
-        WalkSpeedLabel.Text = "Walkspeed: " .. speed
+-- Function to toggle flying
+local function toggleFly()
+    flying = not flying
+    if flying then
+        humanoid.PlatformStand = true
+        fly()
+    else
+        humanoid.PlatformStand = false
+        character.HumanoidRootPart.Anchored = false
     end
-end)
+end
 
--- JumpPower Control
-local JumpPowerLabel = Instance.new("TextLabel")
-JumpPowerLabel.Size = UDim2.new(0, 120, 0, 40)
-JumpPowerLabel.Position = UDim2.new(0.5, -60, 0, 130)
-JumpPowerLabel.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-JumpPowerLabel.BackgroundTransparency = 0.4
-JumpPowerLabel.Text = "Jump Power: 50"
-JumpPowerLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-JumpPowerLabel.Parent = PlayerTabContent
+-- Fly Function
+local function fly()
+    local bodyVelocity = Instance.new("BodyVelocity")
+    bodyVelocity.Velocity = Vector3.new(0, 0, 0)
+    bodyVelocity.MaxForce = Vector3.new(4000, 4000, 4000)
+    bodyVelocity.Parent = character.HumanoidRootPart
 
-local JumpPowerInput = Instance.new("TextBox")
-JumpPowerInput.Size = UDim2.new(0, 60, 0, 40)
-JumpPowerInput.Position = UDim2.new(0.5, 70, 0, 130)
-JumpPowerInput.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-JumpPowerInput.BackgroundTransparency = 0.4
-JumpPowerInput.Text = "50"
-JumpPowerInput.TextColor3 = Color3.fromRGB(255, 255, 255)
-JumpPowerInput.Parent = PlayerTabContent
+    local camera = workspace.CurrentCamera
 
-local JumpPowerButton = Instance.new("TextButton")
-JumpPowerButton.Size = UDim2.new(0, 120, 0, 40)
-JumpPowerButton.Position = UDim2.new(0.5, -60, 0, 180)
-JumpPowerButton.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-JumpPowerButton.BackgroundTransparency = 0.4
-JumpPowerButton.Text = "Set Jump Power"
-JumpPowerButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-JumpPowerButton.Parent = PlayerTabContent
+    while flying do
+        local direction = Vector3.new(
+            (userInputService:IsKeyDown(Enum.KeyCode.D) and 1 or 0) - (userInputService:IsKeyDown(Enum.KeyCode.A) and 1 or 0),
+            (userInputService:IsKeyDown(Enum.KeyCode.Space) and 1 or 0) - (userInputService:IsKeyDown(Enum.KeyCode.LeftControl) and 1 or 0),
+            (userInputService:IsKeyDown(Enum.KeyCode.S) and 1 or 0) - (userInputService:IsKeyDown(Enum.KeyCode.W) and 1 or 0)
+        )
 
-JumpPowerButton.MouseButton1Click:Connect(function()
-    local jumpPower = tonumber(JumpPowerInput.Text)
-    if jumpPower then
-        game.Players.LocalPlayer.Character.Humanoid.JumpPower = jumpPower
-        JumpPowerLabel.Text = "Jump Power: " .. jumpPower
+        bodyVelocity.Velocity = camera.CFrame.LookVector * direction.Z * speed + Vector3.new(0, direction.Y * speed, 0)
+        wait(0.1)
     end
-end)
 
--- Create Admin Tab Content (No separate panel)
-local AdminTabContent = Instance.new("Frame")
-AdminTabContent.Size = UDim2.new(1, -80, 1, -30)
-AdminTabContent.Position = UDim2.new(0, 80, 0, 30)
-AdminTabContent.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-AdminTabContent.BackgroundTransparency = 0.4
-AdminTabContent.Visible = false  -- Initially hidden
-AdminTabContent.Parent = MainFrame
+    bodyVelocity:Destroy()
+end
 
--- Admin Button that executes the specified Lua script
-local AdminButton = Instance.new("TextButton")
-AdminButton.Size = UDim2.new(0, 120, 0, 40)
-AdminButton.Position = UDim2.new(0.5, -60, 0, 20)
-AdminButton.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-AdminButton.BackgroundTransparency = 0.4
-AdminButton.Text = "Execute Admin Script"
-AdminButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-AdminButton.Parent = AdminTabContent
+-- Button to toggle flying
+MainTab:CreateButton({
+    Name = "Toggle Fly",
+    Callback = function()
+        toggleFly()
+    end,
+})
 
-AdminButton.MouseButton1Click:Connect(function()
-    -- Execute the admin script here
-    loadstring(game:HttpGet("https://raw.githubusercontent.com/Tjhost/rbs/refs/heads/main/SC/1.lua", true))()
-end)
+-- Walk Speed Control
+MainTab:CreateSlider({
+    Name = "Walkspeed",
+    Range = {16, 500}, -- Min and Max values
+    Increment = 1, -- Increment value
+    Suffix = "Walk Speed",
+    CurrentValue = 16, -- Initial value
+    Callback = function(value)
+        humanoid.WalkSpeed = value
+    end,
+})
 
--- Tab Button Click Handlers
-MainTabButton.MouseButton1Click:Connect(function()
-    MainTabContent.Visible = true
-    PlayerTabContent.Visible = false
-    AdminTabContent.Visible = false
-end)
+-- Jump Power Control
+MainTab:CreateSlider({
+    Name = "Jump Power",
+    Range = {50, 500}, -- Min and Max values
+    Increment = 1, -- Increment value
+    Suffix = "Jump Power",
+    CurrentValue = 50, -- Initial value
+    Callback = function(value)
+        humanoid.JumpPower = value
+    end,
+})
 
-PlayerTabButton.MouseButton1Click:Connect(function()
-    MainTabContent.Visible = false
-    PlayerTabContent.Visible = true
-    AdminTabContent.Visible = false
-end)
+-- Superhuman Toggle
+MainTab:CreateToggle({
+    Name = "Super-Human",
+    CurrentValue = false,
+    Callback = function(state)
+        if state then
+            humanoid.WalkSpeed = 120
+            humanoid.JumpPower = 120
+        else
+            humanoid.WalkSpeed = 16
+            humanoid.JumpPower = 50
+        end
+    end,
+})
 
-AdminTabButton.MouseButton1Click:Connect(function()
-    MainTabContent.Visible = false
-    PlayerTabContent.Visible = false
-    AdminTabContent.Visible = true
-end)
+-- Admin Section
+local AdminTab = Window:CreateTab("Admin", 4483362458)
 
--- Show Main Tab by default
-MainTabContent.Visible = true
+-- Admin Button to execute Admin script
+AdminTab:CreateButton({
+    Name = "Admin Command",
+    Callback = function()
+        loadstring(game:HttpGet('https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source'))() -- Admin script
+    end,
+})
+
+-- Load configuration
+Rayfield:LoadConfiguration()
