@@ -7,7 +7,7 @@ local Window = Rayfield:CreateWindow({
    ConfigurationSaving = {
       Enabled = true,
       FolderName = nil, -- Create a custom folder for your hub/game
-      FileName = "TJaltf4"
+      FileName = "1023isa1" -- Unique FileName
    },
    Discord = {
       Enabled = false,
@@ -19,7 +19,7 @@ local Window = Rayfield:CreateWindow({
       Title = "Untitled",
       Subtitle = "Key System",
       Note = "No method of obtaining the key is provided",
-      FileName = "Key", -- It is recommended to use something unique as other scripts using Rayfield may overwrite your key file
+      FileName = "1023isa1", -- Unique FileName for the Key
       SaveKey = true, -- The user's key will be saved, but if you change the key, they will be unable to use your script
       GrabKeyFromSite = false, -- If this is true, set Key below to the RAW site you would like Rayfield to get the key from
       Key = {"Hello"} -- List of keys that will be accepted by the system, can be RAW file links (pastebin, github etc) or simple strings ("hello","key22")
@@ -52,6 +52,13 @@ local Button = MainTab:CreateButton({
    end,
 })
 
+-- Function to get the player's humanoid
+local function getHumanoid()
+   local player = game.Players.LocalPlayer
+   local character = player.Character or player.CharacterAdded:Wait()
+   return character:FindFirstChildOfClass("Humanoid")
+end
+
 -- Walk Speed Slider
 MainTab:CreateSlider({
     Name = "Walkspeed",
@@ -60,6 +67,7 @@ MainTab:CreateSlider({
     Suffix = "Walk Speed",
     CurrentValue = 16, -- Initial value
     Callback = function(value)
+        local humanoid = getHumanoid()
         if humanoid then
             humanoid.WalkSpeed = value
         end
@@ -74,6 +82,7 @@ MainTab:CreateSlider({
     Suffix = "Jump Power",
     CurrentValue = 50, -- Initial value
     Callback = function(value)
+        local humanoid = getHumanoid()
         if humanoid then
             humanoid.JumpPower = value
         end
@@ -85,6 +94,7 @@ MainTab:CreateToggle({
     Name = "Super-Human",
     CurrentValue = false,
     Callback = function(state)
+        local humanoid = getHumanoid()
         if humanoid then
             if state then
                 humanoid.WalkSpeed = 120
