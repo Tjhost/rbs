@@ -3,7 +3,7 @@ local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 local Window = Rayfield:CreateWindow({
    Name = "TJ",
    LoadingTitle = "TJ Interface ",
-   LoadingSubtitle = "by TJaltf4",
+   LoadingSubtitle = "by TJALTF4",
    ConfigurationSaving = {
       Enabled = true,
       FolderName = nil, -- Create a custom folder for your hub/game
@@ -60,10 +60,9 @@ MainTab:CreateSlider({
     Suffix = "Walk Speed",
     CurrentValue = 16, -- Initial value
     Callback = function(value)
-        local player = game.Players.LocalPlayer
-        local character = player.Character or player.CharacterAdded:Wait()
-        local humanoid = character:WaitForChild("Humanoid") -- Ensure humanoid is defined
-        humanoid.WalkSpeed = value
+        if humanoid then
+            humanoid.WalkSpeed = value
+        end
     end,
 })
 
@@ -75,10 +74,9 @@ MainTab:CreateSlider({
     Suffix = "Jump Power",
     CurrentValue = 50, -- Initial value
     Callback = function(value)
-        local player = game.Players.LocalPlayer
-        local character = player.Character or player.CharacterAdded:Wait()
-        local humanoid = character:WaitForChild("Humanoid") -- Ensure humanoid is defined
-        humanoid.JumpPower = value
+        if humanoid then
+            humanoid.JumpPower = value
+        end
     end,
 })
 
@@ -87,15 +85,14 @@ MainTab:CreateToggle({
     Name = "Super-Human",
     CurrentValue = false,
     Callback = function(state)
-        local player = game.Players.LocalPlayer
-        local character = player.Character or player.CharacterAdded:Wait()
-        local humanoid = character:WaitForChild("Humanoid") -- Ensure humanoid is defined
-        if state then
-            humanoid.WalkSpeed = 120
-            humanoid.JumpPower = 120
-        else
-            humanoid.WalkSpeed = 16
-            humanoid.JumpPower = 50
+        if humanoid then
+            if state then
+                humanoid.WalkSpeed = 120
+                humanoid.JumpPower = 120
+            else
+                humanoid.WalkSpeed = 16
+                humanoid.JumpPower = 50
+            end
         end
     end,
 })
