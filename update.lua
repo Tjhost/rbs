@@ -1,29 +1,28 @@
--- Create Screen GUI
+-- Create Screen GUI for the Main Frame (TJ GUI)
 local ScreenGui = Instance.new("ScreenGui")
 ScreenGui.Name = "TJGui"
-ScreenGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui") -- Attach to player's GUI
+ScreenGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")  -- Attach to Player GUI
 ScreenGui.ResetOnSpawn = false
 
--- Create a Main Frame (Phantom Black background)
+-- Create the Main Frame (Phantom Black background)
 local MainFrame = Instance.new("Frame")
-MainFrame.Size = UDim2.new(0, 300, 0, 200)  -- Reduced size of the GUI
-MainFrame.Position = UDim2.new(0.5, -150, 0.5, -100)  -- Center position
-MainFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)  -- Black background
-MainFrame.BackgroundTransparency = 0.4  -- Phantom transparency
-MainFrame.BorderSizePixel = 0  -- No borders
+MainFrame.Size = UDim2.new(0, 300, 0, 200)  -- GUI size
+MainFrame.Position = UDim2.new(0.5, -150, 0.5, -100)  -- Center the GUI
+MainFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)  -- Phantom black
+MainFrame.BackgroundTransparency = 0.4  -- Semi-transparent
+MainFrame.BorderSizePixel = 0  -- No border
 MainFrame.Active = true
-MainFrame.Draggable = true  -- Makes the GUI movable
+MainFrame.Draggable = true  -- Movable GUI
 MainFrame.Parent = ScreenGui
 
--- Add a Title Label
+-- Create the Title Label for the GUI
 local TitleLabel = Instance.new("TextLabel")
-TitleLabel.Size = UDim2.new(1, 0, 0, 30)  -- Full width, 30 height
-TitleLabel.Position = UDim2.new(0, 0, 0, 0)  -- Top of the frame
-TitleLabel.BackgroundColor3 = Color3.fromRGB(0, 0, 0)  -- Black background
-TitleLabel.BackgroundTransparency = 0.4  -- Phantom transparency
+TitleLabel.Size = UDim2.new(1, 0, 0, 30)  -- Full width, 30px height
+TitleLabel.BackgroundColor3 = Color3.fromRGB(0, 0, 0)  -- Phantom black background
+TitleLabel.BackgroundTransparency = 0.4  -- Semi-transparent
 TitleLabel.Text = "TJ GUI"
 TitleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)  -- White text
-TitleLabel.TextSize = 20  -- Text size
+TitleLabel.TextSize = 20
 TitleLabel.Parent = MainFrame
 
 -- Create Tabs (Side Tabs: Main, Player)
@@ -70,20 +69,6 @@ FlyButton.Parent = MainTabContent
 
 FlyButton.MouseButton1Click:Connect(function()
     loadstring(game:HttpGet('https://pastebin.com/raw/MsL78SwX'))()  -- Fly script
-end)
-
--- Button: Admin
-local AdminButton = Instance.new("TextButton")
-AdminButton.Size = UDim2.new(0, 120, 0, 40)
-AdminButton.Position = UDim2.new(0.5, -60, 0, 70)
-AdminButton.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-AdminButton.BackgroundTransparency = 0.4
-AdminButton.Text = "Admin"
-AdminButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-AdminButton.Parent = MainTabContent
-
-AdminButton.MouseButton1Click:Connect(function()
-    loadstring(game:HttpGet('https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source'))()  -- Admin commands
 end)
 
 -- Create Player Tab Content
@@ -147,51 +132,58 @@ end
 MainTabButton.MouseButton1Click:Connect(function() switchTab("Main") end)
 PlayerTabButton.MouseButton1Click:Connect(function() switchTab("Player") end)
 
--- Close Button
+-- Close Button (X) in a separate GUI
+local CloseGui = Instance.new("ScreenGui")
+CloseGui.Name = "CloseGui"
+CloseGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")  -- Attach to Player GUI
+
 local CloseButton = Instance.new("TextButton")
 CloseButton.Size = UDim2.new(0, 30, 0, 30)
 CloseButton.Position = UDim2.new(1, -40, 0, 10)  -- Positioning in the top-right corner
 CloseButton.BackgroundColor3 = Color3.fromRGB(255, 0, 0)  -- Red color
 CloseButton.Text = "X"
 CloseButton.TextColor3 = Color3.fromRGB(255, 255, 255)  -- White text
-CloseButton.Parent = MainFrame
+CloseButton.Parent = CloseGui
 
-local guiVisible = true -- Track visibility of the GUI
+-- Reopen Button (A) in a separate GUI
+local OpenGui = Instance.new("ScreenGui")
+OpenGui.Name = "OpenGui"
+OpenGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")  -- Attach to Player GUI
+
+local OpenButton = Instance.new("TextButton")
+OpenButton.Size = UDim2.new(0, 60, 0, 60)  -- Size of the open button
+OpenButton.Position = UDim2.new(0.5, -30, 1, -70)  -- Bottom center position, 3 inches above the bottom
+OpenButton.BackgroundColor3 = Color3.fromRGB(0, 0, 0)  -- Black background
+OpenButton.Text = "A"  -- Text "A"
+OpenButton.TextColor3 = Color3.fromRGB(255, 255, 255)  -- White text
+OpenButton.TextScaled = true  -- Scaled text
+OpenButton.Parent = OpenGui
+
+-- Button Logic for Closing and Reopening GUI
+local guiVisible = true
 
 CloseButton.MouseButton1Click:Connect(function()
-    guiVisible = not guiVisible  -- Toggle visibility
-    MainFrame.Visible = guiVisible
+    guiVisible = false
+    MainFrame.Visible = false  -- Hide the main GUI
 end)
 
--- Reopen Button
-local reopenButton = Instance.new("TextButton")
-reopenButton.Size = UDim2.new(0, 60, 0, 60)  -- Size of the reopen button
-reopenButton.Position = UDim2.new(0.5, -30, 1, -70)  -- Bottom center position, 3 inches above the bottom
-reopenButton.BackgroundColor3 = Color3.fromRGB(0, 0, 0)  -- Black background
-reopenButton.Text = "A"  -- Text "A"
-reopenButton.TextColor3 = Color3.fromRGB(255, 255, 255)  -- White text
-reopenButton.TextScaled = true  -- Scaled text
-reopenButton.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
-
--- Connect reopen button functionality
-reopenButton.MouseButton1Click:Connect(function()
+OpenButton.MouseButton1Click:Connect(function()
     guiVisible = true
-    MainFrame.Visible = true
-    reopenButton:Destroy()  -- Remove the reopen button after clicking
+    MainFrame.Visible = true  -- Show the main GUI
 end)
 
 -- Make the reopen button draggable
 local dragging = false
-reopenButton.MouseButton1Down:Connect(function()
+OpenButton.MouseButton1Down:Connect(function()
     dragging = true
     local mouse = game.Players.LocalPlayer:GetMouse()
     while dragging do
-        reopenButton.Position = UDim2.new(0, mouse.X - 30, 0, mouse.Y - 30) -- Center the button
+        OpenButton.Position = UDim2.new(0, mouse.X - 30, 0, mouse.Y - 30) -- Center the button
         wait()
     end
 end)
 
-reopenButton.MouseButton1Up:Connect(function()
+OpenButton.MouseButton1Up:Connect(function()
     dragging = false
 end)
 
