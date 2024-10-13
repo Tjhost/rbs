@@ -1,177 +1,146 @@
--- CustomUILibrary.lua
-
+-- Custom Library for UI
 local CustomUI = {}
-local Player = game.Players.LocalPlayer
-local ScreenGui = Instance.new("ScreenGui", Player:WaitForChild("PlayerGui"))
-local UserInputService = game:GetService("UserInputService")
 
--- Function to create the main container
-function CustomUI:CreateMainContainer(options)
-    local mainContainer = Instance.new("Frame")
-    mainContainer.Size = options.Size or UDim2.new(0, 400, 0, 300)
-    mainContainer.Position = options.Position or UDim2.new(0.5, -200, 0.5, -150)
-    mainContainer.BackgroundColor3 = options.BackgroundColor or Color3.new(0.2, 0.2, 0.2)
-    mainContainer.BorderSizePixel = options.BorderSize or 0
-    mainContainer.Parent = ScreenGui
+function CustomUI:CreateWindow(title)
+    local ScreenGui = Instance.new("ScreenGui")
+    local Frame = Instance.new("Frame")
+    local Title = Instance.new("TextLabel")
+    
+    ScreenGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
 
-    return mainContainer
+    Frame.Size = UDim2.new(0, 300, 0, 400)
+    Frame.Position = UDim2.new(0.5, -150, 0.5, -200)
+    Frame.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+    Frame.Parent = ScreenGui
+
+    Title.Size = UDim2.new(1, 0, 0, 30)
+    Title.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+    Title.Text = title
+    Title.TextColor3 = Color3.fromRGB(255, 255, 255)
+    Title.Parent = Frame
+
+    return Frame, ScreenGui
 end
 
--- Function to create a draggable tabbed interface
-function CustomUI:CreateTabbedInterface(tabs)
-    local container = self:CreateMainContainer({BackgroundColor = Color3.new(0.3, 0.3, 0.3)})
+function CustomUI:CreateButton(parent, text, callback)
+    local Button = Instance.new("TextButton")
+    Button.Size = UDim2.new(1, 0, 0, 50)
+    Button.BackgroundColor3 = Color3.fromRGB(100, 100, 100)
+    Button.Text = text
+    Button.TextColor3 = Color3.fromRGB(255, 255, 255)
+    Button.Parent = parent
 
-    local tabContainer = Instance.new("Frame")
-    tabContainer.Size = UDim2.new(0, 100, 1, 0)
-    tabContainer.Position = UDim2.new(0, 0, 0, 0)
-    tabContainer.BackgroundColor3 = Color3.new(0.1, 0.1, 0.1)
-    tabContainer.Parent = container
+    Button.MouseButton1Click:Connect(callback)
 
-    local contentContainer = Instance.new("Frame")
-    contentContainer.Size = UDim2.new(1, -100, 1, 0)
-    contentContainer.Position = UDim2.new(0, 100, 0, 0)
-    contentContainer.BackgroundColor3 = Color3.new(0.25, 0.25, 0.25)
-    contentContainer.Parent = container
-
-    local currentTab
-
-    -- Create tabs
-    for tabName, tabContent in pairs(tabs) do
-        local tabButton = Instance.new("TextButton")
-        tabButton.Size = UDim2.new(1, 0, 0, 40)
-        tabButton.Text = tabName
-        tabButton.BackgroundColor3 = Color3.new(0.15, 0.15, 0.15)
-        tabButton.Parent = tabContainer
-
-        tabButton.MouseButton1Click:Connect(function()
-            if currentTab then
-                currentTab.Visible = false
-            end
-            tabContent.Visible = true
-            currentTab = tabContent
-        end)
-
-        -- Create tab content
-        tabContent.Visible = false
-        tabContent.Parent = contentContainer
-    end
-
-    -- Set the first tab as visible
-    if next(tabs) then
-        currentTab = tabs[next(tabs)]
-        currentTab.Visible = true
-    end
+    return Button
 end
 
--- Function to create a draggable frame
-function CustomUI:CreateDraggableFrame(options)
-    local frame = Instance.new("Frame")
-    frame.Size = options.Size or UDim2.new(0, 300, 0, 200)
-    frame.Position = options.Position or UDim2.new(0.5, -150, 0.5, -100)
-    frame.BackgroundColor3 = options.BackgroundColor or Color3.new(1, 1, 1)
-    frame.BorderSizePixel = options.BorderSize or 0
-    frame.Parent = ScreenGui
+function CustomUI:CreateSlider(parent, text, min, max, callback)
+    local SliderFrame = Instance.new("Frame")
+    local SliderLabel = Instance.new("TextLabel")
+    local Slider = Instance.new("TextButton")
+    
+    SliderFrame.Size = UDim2.new(1, 0, 0, 50)
+    SliderFrame.Parent = parent
+    
+    SliderLabel.Size = UDim2.new(1, 0, 0, 20)
+    SliderLabel.Text = text
+    SliderLabel.BackgroundTransparency = 1
+    SliderLabel.Parent = SliderFrame
 
-    local titleBar = Instance.new("TextLabel")
-    titleBar.Size = UDim2.new(1, 0, 0, 30)
-    titleBar.BackgroundColor3 = options.TitleBarColor or Color3.new(0, 0.5, 0)
-    titleBar.Text = options.Title or "Draggable Frame"
-    titleBar.Parent = frame
+    Slider.Size = UDim2.new(1, 0, 0, 20)
+    Slider.BackgroundColor3 = Color3.fromRGB(200, 200, 200)
+    Slider.Parent = SliderFrame
 
-    -- Make frame draggable
-    local dragging
-    local dragInput
-    local dragStart
-    local startPos
+    local Value = min
+    Slider.Text = tostring(Value)
 
-    titleBar.InputBegan:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.MouseButton1 then
-            dragging = true
-            dragStart = input.Position
-            startPos = frame.Position
-
-            input.Changed:Connect(function()
-                if input.UserInputState == Enum.UserInputState.End then
-                    dragging = false
-                end
-            end)
-        end
-    end)
-
-    UserInputService.InputChanged:Connect(function(input)
-        if dragging and input.UserInputType == Enum.UserInputType.MouseMovement then
-            local delta = input.Position - dragStart
-            frame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
-        end
-    end)
-
-    return frame
-end
-
--- Function to create a button
-function CustomUI:CreateButton(options)
-    local button = Instance.new("TextButton")
-    button.Size = options.Size or UDim2.new(0, 200, 0, 50)
-    button.Position = options.Position or UDim2.new(0.5, -100, 0, 0)
-    button.Text = options.Text or "Button"
-    button.BackgroundColor3 = options.BackgroundColor or Color3.new(0, 0.7, 0.7)
-    button.Parent = ScreenGui
-
-    button.MouseButton1Click:Connect(function()
-        if options.Callback then
-            options.Callback()
-        end
-    end)
-
-    return button
-end
-
--- Function to create a slider
-function CustomUI:CreateSlider(options)
-    local sliderFrame = Instance.new("Frame")
-    sliderFrame.Size = UDim2.new(0, 200, 0, 50)
-    sliderFrame.Position = options.Position or UDim2.new(0.5, -100, 0, 0)
-    sliderFrame.Parent = ScreenGui
-
-    local sliderBar = Instance.new("Frame")
-    sliderBar.Size = UDim2.new(1, 0, 0, 10)
-    sliderBar.Position = UDim2.new(0, 0, 0.5, -5)
-    sliderBar.BackgroundColor3 = Color3.new(0.5, 0.5, 0.5)
-    sliderBar.Parent = sliderFrame
-
-    local sliderButton = Instance.new("TextButton")
-    sliderButton.Size = UDim2.new(0, 10, 0, 30)
-    sliderButton.BackgroundColor3 = Color3.new(1, 1, 1)
-    sliderButton.Position = UDim2.new(0, 0, 0, 10)
-    sliderButton.Parent = sliderFrame
-
-    local value = options.Default or 0
-    local min = options.Min or 0
-    local max = options.Max or 100
-
-    sliderButton.MouseButton1Down:Connect(function()
-        local dragging
+    Slider.MouseButton1Down:Connect(function()
         local mouse = game.Players.LocalPlayer:GetMouse()
-        
-        dragging = true
-        while dragging do
-            local newPos = math.clamp(mouse.X - sliderBar.AbsolutePosition.X, 0, sliderBar.AbsoluteSize.X)
-            sliderButton.Position = UDim2.new(0, newPos, 0, 10)
-            value = math.round((newPos / sliderBar.AbsoluteSize.X) * (max - min) + min)
-            if options.Callback then
-                options.Callback(value)
-            end
+        while mouse.Button1Down do
+            local position = mouse.X - SliderFrame.AbsolutePosition.X
+            local percentage = math.clamp(position / SliderFrame.AbsoluteSize.X, 0, 1)
+            Value = math.floor(min + (percentage * (max - min)))
+            Slider.Text = tostring(Value)
+            callback(Value)
             wait()
         end
     end)
 
-    UserInputService.InputEnded:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.MouseButton1 then
-            dragging = false
-        end
-    end)
-
-    return sliderFrame
+    return SliderFrame
 end
 
-return CustomUI
+-- Create UI Window
+local mainWindow, screenGui = CustomUI:CreateWindow("Custom Script")
+
+-- Toggle variables
+local noclipEnabled = false
+local flyEnabled = false
+local infiniteJumpEnabled = false
+local playerSpeed = 16 -- Default walk speed
+local jumpPower = 50 -- Default jump power
+
+-- Create Noclip Button
+CustomUI:CreateButton(mainWindow, "Toggle Noclip", function()
+    noclipEnabled = not noclipEnabled
+    if noclipEnabled then
+        print("Noclip enabled")
+    else
+        print("Noclip disabled")
+    end
+end)
+
+-- Create Fly Button
+CustomUI:CreateButton(mainWindow, "Toggle Fly", function()
+    flyEnabled = not flyEnabled
+    if flyEnabled then
+        print("Fly enabled")
+    else
+        print("Fly disabled")
+    end
+end)
+
+-- Create Infinite Jump Button
+CustomUI:CreateButton(mainWindow, "Toggle Infinite Jump", function()
+    infiniteJumpEnabled = not infiniteJumpEnabled
+    if infiniteJumpEnabled then
+        print("Infinite Jump enabled")
+    else
+        print("Infinite Jump disabled")
+    end
+end)
+
+-- Create Speed Slider
+CustomUI:CreateSlider(mainWindow, "Speed", 16, 100, function(value)
+    playerSpeed = value
+    game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = playerSpeed
+    print("Speed set to:", playerSpeed)
+end)
+
+-- Create Jump Power Slider
+CustomUI:CreateSlider(mainWindow, "Jump Power", 50, 200, function(value)
+    jumpPower = value
+    game.Players.LocalPlayer.Character.Humanoid.JumpPower = jumpPower
+    print("Jump Power set to:", jumpPower)
+end)
+
+-- Setup Infinite Jump functionality
+game:GetService("UserInputService").JumpRequest:Connect(function()
+    if infiniteJumpEnabled then
+        game.Players.LocalPlayer.Character:FindFirstChildOfClass("Humanoid"):ChangeState(Enum.HumanoidStateType.Jumping)
+    end
+end)
+
+-- Enable noclip functionality
+game:GetService("RunService").RenderStepped:Connect(function()
+    if noclipEnabled and game.Players.LocalPlayer.Character then
+        for _, part in ipairs(game.Players.LocalPlayer.Character:GetDescendants()) do
+            if part:IsA("BasePart") then
+                part.CanCollide = false
+            end
+        end
+    end
+end)
+
+-- Enable fly functionality
+-- (Add your fly implementation here)
