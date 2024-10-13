@@ -32,64 +32,15 @@ local Window = Rayfield:CreateWindow({
 local MainTab = Window:CreateTab("Main", 4483362458) 
 local Section = MainTab:CreateSection("Main")
 
--- Quality of Life Features
-local Player = game.Players.LocalPlayer
-
--- Auto-save function
-local function saveSettings()
-    -- Save Jump Power and Speed settings
-    local jumpPower = Player.Character.Humanoid.JumpPower
-    local walkspeed = Player.Character.Humanoid.WalkSpeed
-    -- Here you can implement the actual saving method if needed.
-    print("Settings saved: Jump Power = " .. jumpPower .. ", Speed = " .. walkspeed)
-end
-
--- Reset function
-local function resetSettings()
-    Player.Character.Humanoid.JumpPower = 50 -- Default Jump Power
-    Player.Character.Humanoid.WalkSpeed = 16 -- Default Speed
-    print("Settings reset to default.")
-end
-
--- Notification function
-local function notify(message)
-    game.StarterGui:SetCore("ChatMakeSystemMessage", {
-        Text = message,
-        Color = Color3.new(1, 1, 0), -- Yellow color
-        Font = Enum.Font.SourceSans,
-        TextSize = 20
-    })
-end
-
--- Send Chat Message Button
-MainTab:CreateButton({
-    Name = "Send Chat Message",
-    Callback = function()
-        local message = "Hello from TJ's script!"
-        game.ReplicatedStorage.DefaultChatSystemChatEvents.SayMessageRequest:Fire(message, "All")
-        notify("Sent message: " .. message)
-    end,
-})
-
--- Toggle GUI Visibility
-MainTab:CreateButton({
-    Name = "Toggle GUI Visibility",
-    Callback = function()
-        Window:Toggle()
-        notify("Toggled GUI visibility.")
-    end,
-})
-
 -- Fly Button
-MainTab:CreateButton({
+local Button = MainTab:CreateButton({
    Name = "Fly",
    Callback = function()
       loadstring(game:HttpGet('https://pastebin.com/raw/MsL78SwX'))()
    end,
 })
 
--- Infinite Yield Button
-MainTab:CreateButton({
+local Button = MainTab:CreateButton({
     Name = "IY",
     Callback = function()
         loadstring(game:HttpGet('https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source'))()
@@ -106,6 +57,8 @@ local VehicleTuning = {
     superchargers = 0, 
     performanceGearboxEnabled = false, 
     brakeUpgradeEnabled = false, 
+    jumpPower = 50, -- Default jump power
+    speed = 16, -- Default speed
 }
 
 -- Car Settings Tab
@@ -121,49 +74,96 @@ CarSettingsTab:CreateSlider({
     CurrentValue = VehicleTuning.horsepower,
     Callback = function(value)
         VehicleTuning.horsepower = value 
-        saveSettings()  -- Save settings on change
+    end,
+})
+
+-- Turbochargers Slider
+CarSettingsTab:CreateSlider({
+    Name = "Turbochargers",
+    Range = {0, 5}, -- Limited max value for performance
+    Increment = 1,
+    Suffix = "Turbochargers",
+    CurrentValue = VehicleTuning.turbochargers,
+    Callback = function(value)
+        VehicleTuning.turbochargers = value 
+    end,
+})
+
+-- Superchargers Slider
+CarSettingsTab:CreateSlider({
+    Name = "Superchargers",
+    Range = {0, 5}, -- Limited max value for performance
+    Increment = 1,
+    Suffix = "Superchargers",
+    CurrentValue = VehicleTuning.superchargers,
+    Callback = function(value)
+        VehicleTuning.superchargers = value 
+    end,
+})
+
+-- Performance Gearbox Toggle
+CarSettingsTab:CreateToggle({
+    Name = "Performance Gearbox",
+    CurrentValue = VehicleTuning.performanceGearboxEnabled,
+    Callback = function(state)
+        VehicleTuning.performanceGearboxEnabled = state 
+    end,
+})
+
+-- Brake Upgrade Toggle
+CarSettingsTab:CreateToggle({
+    Name = "Upgraded Brakes",
+    CurrentValue = VehicleTuning.brakeUpgradeEnabled,
+    Callback = function(state)
+        VehicleTuning.brakeUpgradeEnabled = state 
     end,
 })
 
 -- Jump Power Slider
 CarSettingsTab:CreateSlider({
     Name = "Jump Power",
-    Range = {50, 300}, -- Reasonable jump power range
+    Range = {50, 150}, -- Reasonable range for jump power
     Increment = 5,
     Suffix = "Jump Power",
-    CurrentValue = Player.Character.Humanoid.JumpPower,
+    CurrentValue = VehicleTuning.jumpPower,
     Callback = function(value)
-        Player.Character.Humanoid.JumpPower = value 
-        saveSettings()  -- Save settings on change
+        VehicleTuning.jumpPower = value
+        game.Players.LocalPlayer.Character.Humanoid.JumpPower = value -- Update the player's jump power
     end,
 })
 
 -- Speed Slider
 CarSettingsTab:CreateSlider({
     Name = "Speed",
-    Range = {16, 100}, -- Reasonable speed range
+    Range = {16, 100}, -- Reasonable range for speed
     Increment = 5,
     Suffix = "Speed",
-    CurrentValue = Player.Character.Humanoid.WalkSpeed,
+    CurrentValue = VehicleTuning.speed,
     Callback = function(value)
-        Player.Character.Humanoid.WalkSpeed = value 
-        saveSettings()  -- Save settings on change
+        VehicleTuning.speed = value
+        game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = value -- Update the player's speed
     end,
 })
 
--- Reset Button
-CarSettingsTab:CreateButton({
-    Name = "Reset Settings",
-    Callback = function()
-        resetSettings()
-        notify("Settings reset to default values.")
-    end,
-})
+-- Function to kick the player
+local function onKeyPress(input, gameProcessed)
+    -- Check if the input was not processed by other UI elements
+    if not gameProcessed then
+        -- Check if the "9" key was pressed
+        if input.UserInputType == Enum.UserInputType.Keyboard and input.KeyCode == Enum.KeyCode.Nine then
+            -- Kick the player from the game
+            game.Players.LocalPlayer:Kick("You have been kicked for pressing 9!")
+        end
+    end
+end
+
+-- Connect the function to the InputBegan event
+game:GetService("UserInputService").InputBegan:Connect(onKeyPress)
 
 -- Update Vehicle Properties Loop
 while wait(1) do -- Reasonable wait time
     pcall(function()
-        local vehicle = vehicleSession:FindFirstChild(Player.Name.."-Car") 
+        local vehicle = vehicleSession:FindFirstChild(game.Players.LocalPlayer.Name.."-Car") 
         if vehicle then
             local tuningModule = require(vehicle:FindFirstChild("A-Chassis Tune")) 
 
