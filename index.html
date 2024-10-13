@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Script Generator</title>
+    <style>
+        body {
+            background-color: black;
+            color: white;
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+        }
+        #output {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #333;
+            color: #fff;
+            border-radius: 5px;
+            width: 80%;
+            text-align: left;
+            font-family: monospace;
+        }
+        button {
+            margin: 10px;
+            padding: 10px;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        #create-btn {
+            background-color: #4CAF50;
+            color: white;
+        }
+        #copy-btn {
+            background-color: #2196F3;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Script Generator</h1>
+
+    <!-- Input for URL -->
+    <input type="text" id="urlInput" placeholder="Enter website URL" style="padding: 10px; width: 80%;">
+
+    <!-- Buttons for Create and Copy -->
+    <div>
+        <button id="create-btn">Create</button>
+        <button id="copy-btn">Copy</button>
+    </div>
+
+    <!-- Output area for generated script -->
+    <pre id="output"></pre>
+
+    <script>
+        // Function to generate the formatted script
+        function formatWebsite(url) {
+            return `loadstring(game:HttpGet("${url}", true))()`;
+        }
+
+        // Handle the Create button click
+        document.getElementById("create-btn").onclick = function () {
+            const url = document.getElementById("urlInput").value;
+            const outputElement = document.getElementById("output");
+            const script = formatWebsite(url);
+            outputElement.textContent = script;
+        };
+
+        // Handle the Copy button click
+        document.getElementById("copy-btn").onclick = function () {
+            const outputElement = document.getElementById("output");
+            const script = outputElement.textContent;
+            navigator.clipboard.writeText(script).then(function () {
+                alert("Script copied to clipboard!");
+            }, function () {
+                alert("Failed to copy script.");
+            });
+        };
+    </script>
+
+</body>
+</html>
