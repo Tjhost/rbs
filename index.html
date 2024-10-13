@@ -42,6 +42,10 @@
             background-color: #2196F3;
             color: white;
         }
+        input {
+            padding: 10px;
+            width: 80%;
+        }
     </style>
 </head>
 <body>
@@ -61,6 +65,12 @@
     <pre id="output"></pre>
 
     <script>
+        // Function to validate the URL
+        function isValidURL(url) {
+            const urlPattern = /^(https?:\/\/[^\s/$.?#].[^\s]*)$/i;
+            return urlPattern.test(url);
+        }
+
         // Function to generate the formatted script
         function formatWebsite(url) {
             return `loadstring(game:HttpGet("${url}", true))()`;
@@ -70,6 +80,15 @@
         document.getElementById("create-btn").onclick = function () {
             const url = document.getElementById("urlInput").value;
             const outputElement = document.getElementById("output");
+
+            // Validate the input to ensure it's a valid URL
+            if (!isValidURL(url)) {
+                alert("Please enter a valid URL starting with http:// or https://.");
+                outputElement.textContent = "";
+                return;
+            }
+
+            // Generate the script
             const script = formatWebsite(url);
             outputElement.textContent = script;
         };
@@ -78,6 +97,12 @@
         document.getElementById("copy-btn").onclick = function () {
             const outputElement = document.getElementById("output");
             const script = outputElement.textContent;
+
+            if (script.trim() === "") {
+                alert("No script to copy!");
+                return;
+            }
+
             navigator.clipboard.writeText(script).then(function () {
                 alert("Script copied to clipboard!");
             }, function () {
