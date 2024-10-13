@@ -134,25 +134,26 @@ mini2.TextSize = 40
 mini2.Position = UDim2.new(0, 44, -1, 57)
 mini2.Visible = false
 
--- Function to toggle flying
-local function toggleFly()
-    if nowe == true then
-        nowe = false
-        speaker.Character.Humanoid:ChangeState(Enum.HumanoidStateType.RunningNoPhysics)
-        speaker.Character.Animate.Disabled = false
-    else
-        nowe = true
+-- Assuming this is the original default fly function
+local function fly()
+    nowe = not nowe
+    if nowe then
+        -- flying on
         speaker.Character.Animate.Disabled = true
         speaker.Character.Humanoid:ChangeState(Enum.HumanoidStateType.Swimming)
+    else
+        -- flying off
+        speaker.Character.Animate.Disabled = false
+        speaker.Character.Humanoid:ChangeState(Enum.HumanoidStateType.RunningNoPhysics)
     end
 end
 
--- Button click to toggle flying
-onof.MouseButton1Down:Connect(toggleFly)
+-- Button click to toggle flying using the default function
+onof.MouseButton1Down:Connect(fly)
 
 -- Keybind for toggling fly mode with "\"
 UserInputService.InputBegan:Connect(function(input)
     if input.KeyCode == Enum.KeyCode.BackSlash then
-        toggleFly()
+        fly()
     end
 end)
