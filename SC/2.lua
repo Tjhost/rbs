@@ -3,10 +3,10 @@ local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 local Window = Rayfield:CreateWindow({
    Name = "TJ",
    LoadingTitle = "TJ Interface",
-   LoadingSubtitle = "by TJALTF4",
+   LoadingSubtitle = "by TJ",
    ConfigurationSaving = {
-      Enabled = true,
-      FolderName = nil, -- Create a custom folder for your hub/game
+      Enabled = false,
+      FolderName = rghr7gh84h93utg8yhuefg87h4ebgf783hr88gry, -- Create a custom folder for your hub/game
       FileName = "rghr7gh84h93utg8yhuefg87h4ebgf783hr88gry" -- Unique FileName
    },
    Discord = {
