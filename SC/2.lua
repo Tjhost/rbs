@@ -6,7 +6,7 @@ local Window = Rayfield:CreateWindow({
    LoadingSubtitle = "by TJ",
    ConfigurationSaving = {
       Enabled = false,
-      FolderName = rghr7gh84h93utg8yhuefg87h4ebgf783hr88gry, -- Create a custom folder for your hub/game
+      FolderName = "rghr7gh84h93utg8yhuefg87h4ebgf783hr88gry", -- Create a custom folder for your hub/game
       FileName = "rghr7gh84h93utg8yhuefg87h4ebgf783hr88gry" -- Unique FileName
    },
    Discord = {
@@ -100,8 +100,54 @@ MainTab:CreateToggle({
     Callback = function(state)
         espEnabled = state
         if state then
-            loadstring(game:HttpGet('https://pastebin.com/raw/q4k5KwXB'))() -- ESP script for hitbox and name
+            -- ESP script for displaying player names and hitboxes
+            loadstring([[
+                local Players = game:GetService("Players")
+                local RunService = game:GetService("RunService")
+                local ESP = {}
+
+                function ESP:CreateESP(player)
+                    local highlight = Instance.new("Highlight")
+                    highlight.Parent = player.Character
+                    highlight.Adornee = player.Character
+                    highlight.FillColor = Color3.fromRGB(255, 0, 0) -- Color of the ESP
+                    highlight.OutlineColor = Color3.fromRGB(0, 0, 0) -- Outline color
+                end
+
+                Players.PlayerAdded:Connect(function(player)
+                    player.CharacterAdded:Connect(function(character)
+                        ESP:CreateESP(player)
+                    end)
+                end)
+
+                for _, player in pairs(Players:GetPlayers()) do
+                    if player ~= Players.LocalPlayer then
+                        ESP:CreateESP(player)
+                    end
+                end
+
+                RunService.Heartbeat:Connect(function()
+                    for _, player in pairs(Players:GetPlayers()) do
+                        if player ~= Players.LocalPlayer and player.Character then
+                            local highlight = player.Character:FindFirstChildOfClass("Highlight")
+                            if highlight then
+                                highlight.Adornee = player.Character
+                            end
+                        end
+                    end
+                end)
+            ]])()
+            print("ESP enabled")
         else
+            -- Disable ESP by removing all highlights
+            for _, player in pairs(game.Players:GetPlayers()) do
+                if player.Character then
+                    local highlight = player.Character:FindFirstChildOfClass("Highlight")
+                    if highlight then
+                        highlight:Destroy()
+                    end
+                end
+            end
             print("ESP disabled")
         end
     end,
