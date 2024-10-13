@@ -6,8 +6,8 @@ local Window = Rayfield:CreateWindow({
    LoadingSubtitle = "by TJALTF4",
    ConfigurationSaving = {
       Enabled = true,
-      FolderName = nil,
-      FileName = "rghr7gh84h93utg8yhuefg87h4ebgf783hr88gry"
+      FolderName = nil, -- Create a custom folder for your hub/game
+      FileName = "rghr7gh84h93utg8yhuefg87h4ebgf783hr88gry" -- Unique FileName
    },
    Discord = {
       Enabled = false,
@@ -15,68 +15,11 @@ local Window = Rayfield:CreateWindow({
       RememberJoins = true
    },
    KeySystem = false,
-   KeySettings = {
-      Title = "Untitled",
-      Subtitle = "Key System",
-      Note = "No method of obtaining the key is provided",
-      FileName = "rghr7gh84h93utg8yhuefg87h4ebgf783hr88gry",
-      SaveKey = true,
-      GrabKeyFromSite = false,
-      Key = {"Hello"}
-   }
 })
 
--- ESP Functionality
-local ESPEnabled = false
-
-local function toggleESP(state)
-    ESPEnabled = state
-    while ESPEnabled do
-        for _, player in pairs(game.Players:GetPlayers()) do
-            if player ~= game.Players.LocalPlayer and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
-                if not player.Character:FindFirstChild("ESPBox") then
-                    local espBox = Instance.new("BoxHandleAdornment")
-                    espBox.Name = "ESPBox"
-                    espBox.Adornee = player.Character:FindFirstChild("HumanoidRootPart")
-                    espBox.AlwaysOnTop = true
-                    espBox.ZIndex = 10
-                    espBox.Size = Vector3.new(4, 6, 0)
-                    espBox.Transparency = 0.5
-                    espBox.Color3 = Color3.new(1, 0, 0) -- Red color for the ESP box
-                    espBox.Parent = player.Character
-                end
-            end
-        end
-        wait(0.1) -- Updates ESP every 0.1 seconds
-    end
-
-    -- Remove ESP when turned off
-    for _, player in pairs(game.Players:GetPlayers()) do
-        if player.Character and player.Character:FindFirstChild("ESPBox") then
-            player.Character:FindFirstChild("ESPBox"):Destroy()
-        end
-    end
-end
-
-local MainTab = Window:CreateTab("Main", 4483362458)
+-- Main Tab for functions
+local MainTab = Window:CreateTab("Main", 4483362458) -- Title, Image
 local Section = MainTab:CreateSection("Main")
-
--- Add ESP Toggle
-MainTab:CreateToggle({
-    Name = "ESP",
-    CurrentValue = false,
-    Callback = function(state)
-        toggleESP(state)
-    end,
-})
-
--- The rest of your code remains unchanged
-local Button = MainTab:CreateButton({
-   Name = "Fly",
-   Callback = function()
-      loadstring(game:HttpGet('https://pastebin.com/raw/MsL78SwX'))()
-   end,
-})
 
 -- Function to get the player's humanoid
 local function getHumanoid()
@@ -88,10 +31,10 @@ end
 -- Walk Speed Slider
 MainTab:CreateSlider({
     Name = "Walkspeed",
-    Range = {16, 500},
-    Increment = 1,
+    Range = {16, 500}, -- Min and Max values
+    Increment = 1, -- Increment value
     Suffix = "Walk Speed",
-    CurrentValue = 16,
+    CurrentValue = 16, -- Initial value
     Callback = function(value)
         local humanoid = getHumanoid()
         if humanoid then
@@ -103,10 +46,10 @@ MainTab:CreateSlider({
 -- Jump Power Slider
 MainTab:CreateSlider({
     Name = "Jump Power",
-    Range = {50, 500},
-    Increment = 1,
+    Range = {50, 500}, -- Min and Max values
+    Increment = 1, -- Increment value
     Suffix = "Jump Power",
-    CurrentValue = 50,
+    CurrentValue = 50, -- Initial value
     Callback = function(value)
         local humanoid = getHumanoid()
         if humanoid then
@@ -133,21 +76,111 @@ MainTab:CreateToggle({
     end,
 })
 
-local Button = MainTab:CreateButton({
-    Name = "spectate player",
+-- Fly Button
+MainTab:CreateButton({
+    Name = "Fly",
+    Callback = function()
+        loadstring(game:HttpGet('https://pastebin.com/raw/MsL78SwX'))()
+    end,
+})
+
+-- Spectate Player Button
+MainTab:CreateButton({
+    Name = "Spectate Player",
     Callback = function()
         loadstring(game:HttpGet('https://pastebin.com/raw/zjAa6w2c'))()
     end,
- })
+})
 
-local AdminTab = Window:CreateTab("Admin", 4483362458)
+-- ESP Toggle
+local espEnabled = false
+MainTab:CreateToggle({
+    Name = "ESP Toggle",
+    CurrentValue = false,
+    Callback = function(state)
+        espEnabled = state
+        if state then
+            loadstring(game:HttpGet('https://pastebin.com/raw/q4k5KwXB'))() -- ESP script for hitbox and name
+        else
+            print("ESP disabled")
+        end
+    end,
+})
+
+-- Copy 'bang PlayerName' to clipboard toggle
+local copyEnabled = false
+MainTab:CreateToggle({
+    Name = "Copy 'bang PlayerName' on click",
+    CurrentValue = false, -- Default value (off)
+    Callback = function(state)
+        copyEnabled = state
+        if state then
+            print("Copy to clipboard enabled.")
+        else
+            print("Copy to clipboard disabled.")
+        end
+    end,
+})
+
+-- Function to copy name to clipboard
+local function copyToClipboard(text)
+    setclipboard(text)
+end
+
+-- Function to copy player name from any distance, no aiming required
+local function setupClickToCopy()
+    local player = game.Players.LocalPlayer
+    local mouse = player:GetMouse()
+
+    mouse.Button1Down:Connect(function()
+        if copyEnabled then -- Only run if toggle is enabled
+            for _, targetPlayer in ipairs(game.Players:GetPlayers()) do
+                if targetPlayer ~= player and targetPlayer.Character then
+                    local distance = (player.Character.HumanoidRootPart.Position - targetPlayer.Character.HumanoidRootPart.Position).Magnitude
+                    if distance < 1000 then -- Can set any max distance here
+                        local textToCopy = "bang " .. targetPlayer.DisplayName
+                        copyToClipboard(textToCopy)
+                        print("Copied '" .. textToCopy .. "' to clipboard!")
+                        break -- Copy only one player’s name
+                    end
+                end
+            end
+        end
+    end)
+end
+
+-- Initialize click-to-copy functionality
+setupClickToCopy()
+
+-- Admin Tab
+local AdminTab = Window:CreateTab("Admin", 4483362458) -- Title, Image
 local Section = AdminTab:CreateSection("Admin")
 
-local Button = AdminTab:CreateButton({
+-- Admin Button
+AdminTab:CreateButton({
    Name = "Admin",
    Callback = function()
       loadstring(game:HttpGet('https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source'))()
    end,
+})
+
+-- Teleport Tool Button
+MainTab:CreateButton({
+    Name = "Teleport Tool",
+    Callback = function()
+        local tool = Instance.new("Tool")
+        tool.Name = "Teleport Tool"
+        tool.RequiresHandle = false
+        tool.Activated:Connect(function()
+            local mouse = game.Players.LocalPlayer:GetMouse()
+            local character = game.Players.LocalPlayer.Character
+            if character and mouse then
+                character:MoveTo(mouse.Hit.p)
+            end
+        end)
+        tool.Parent = game.Players.LocalPlayer.Backpack
+        print("Teleport Tool given.")
+    end,
 })
 
 -- Load configuration
