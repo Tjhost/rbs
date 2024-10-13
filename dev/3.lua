@@ -1,33 +1,37 @@
--- Gear Spawner Script
-local Players = game:GetService("Players")
+-- Gear Spawner Script for Script Injector
 
--- List of Admin and Builder tool asset IDs
-local toolIds = {
-    "12345678", -- Replace with your Admin tool asset IDs
-    "23456789", -- Builder tool asset ID
-    "34567890"  -- Add more tools as needed
-}
+-- Function to give admin and builder tools
+local function giveTools()
+    -- Create and give admin tools
+    local adminTool = Instance.new("Tool")
+    adminTool.Name = "Admin Tool"
+    adminTool.RequiresHandle = true
+    local adminHandle = Instance.new("Part")
+    adminHandle.Size = Vector3.new(1, 1, 1)
+    adminHandle.Anchored = false
+    adminHandle.CanCollide = false
+    adminHandle.BrickColor = BrickColor.new("Bright red")
+    adminHandle.Parent = adminTool
+    adminTool.Handle = adminHandle
 
-local function giveTools(player)
-    local character = player.Character or player.CharacterAdded:Wait()
+    -- Optionally add some script functionality to the admin tool here
 
-    for _, toolId in ipairs(toolIds) do
-        local tool = Instance.new("Tool")
-        tool.Name = "SpawnedTool"
-        tool.TextureId = "rbxassetid://" .. toolId -- Use the tool's asset ID for the texture
-        tool.Parent = player.Backpack
-    end
+    -- Create and give builder tools
+    local builderTool = Instance.new("Tool")
+    builderTool.Name = "Builder Tool"
+    builderTool.RequiresHandle = true
+    local builderHandle = Instance.new("Part")
+    builderHandle.Size = Vector3.new(1, 1, 1)
+    builderHandle.Anchored = false
+    builderHandle.CanCollide = false
+    builderHandle.BrickColor = BrickColor.new("Bright blue")
+    builderHandle.Parent = builderTool
+    builderTool.Handle = builderHandle
+
+    -- Add tools to player's backpack
+    game.Players.LocalPlayer.Backpack:WaitForChild("Backpack"):AddItem(adminTool)
+    game.Players.LocalPlayer.Backpack:WaitForChild("Backpack"):AddItem(builderTool)
 end
 
-local function onPlayerAdded(player)
-    player.CharacterAdded:Connect(function()
-        giveTools(player)
-    end)
-end
-
-Players.PlayerAdded:Connect(onPlayerAdded)
-
--- Give tools to players already in the game
-for _, player in ipairs(Players:GetPlayers()) do
-    giveTools(player)
-end
+-- Run the function to give tools
+giveTools()
