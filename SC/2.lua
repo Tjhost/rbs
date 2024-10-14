@@ -6,8 +6,8 @@ local Window = Rayfield:CreateWindow({
     LoadingSubtitle = "by TJ",
     ConfigurationSaving = {
         Enabled = false,
-        FolderName = "TJ_Config",
-        FileName = "ConfigFile"
+        FolderName = "rfwefwefwefwfw",
+        FileName = "1142"
     },
     Discord = {
         Enabled = false,
@@ -25,53 +25,37 @@ local function getHumanoid()
     return character:FindFirstChildOfClass("Humanoid")
 end
 
--- Function to create ESP with detailed character information
+-- Function to create ESP with full character details
 local function createESP(character)
     if character then
         local humanoidRootPart = character:FindFirstChild("HumanoidRootPart")
         if humanoidRootPart then
-            -- Create a box for the character
             local boxSize = character:GetExtentsSize()
             local espBox = Instance.new("BoxHandleAdornment")
-            espBox.Size = boxSize + Vector3.new(0.5, 0.5, 0.5) -- Slightly larger for visibility
-            espBox.Color3 = Color3.fromRGB(255, 0, 0) -- Red color for the box
+            espBox.Size = boxSize
+            espBox.Color3 = Color3.fromRGB(255, 0, 0) -- Red color
             espBox.AlwaysOnTop = true
             espBox.ZIndex = 10
             espBox.Adornee = humanoidRootPart
             espBox.Parent = humanoidRootPart
             
-            -- Adding boxes for hair accessories
+            -- Adding a frame to represent the hair
             for _, accessory in ipairs(character:GetChildren()) do
-                if accessory:IsA("Accessory") and accessory.Name:lower():find("hair") then
+                if accessory:IsA("Accessory") then
                     local hairBox = Instance.new("BoxHandleAdornment")
-                    hairBox.Size = accessory:GetExtentsSize() + Vector3.new(0.2, 0.2, 0.2) -- Slightly larger for visibility
+                    hairBox.Size = accessory:GetExtentsSize()
                     hairBox.Color3 = Color3.fromRGB(0, 255, 0) -- Green color for hair
                     hairBox.AlwaysOnTop = true
                     hairBox.ZIndex = 10
-                    hairBox.Adornee = accessory.Handle
-                    hairBox.Parent = accessory.Handle
+                    hairBox.Adornee = accessory
+                    hairBox.Parent = accessory
                 end
             end
-            
-            -- Optional: Create a label above the character
-            local label = Instance.new("BillboardGui")
-            label.Size = UDim2.new(0, 100, 0, 50)
-            label.StudsOffset = Vector3.new(0, 3, 0)
-            label.Adornee = humanoidRootPart
-            
-            local textLabel = Instance.new("TextLabel")
-            textLabel.Size = UDim2.new(1, 0, 1, 0)
-            textLabel.BackgroundTransparency = 1
-            textLabel.Text = character.Name
-            textLabel.TextColor3 = Color3.fromRGB(255, 255, 255) -- White color for the text
-            textLabel.Parent = label
-            
-            label.Parent = humanoidRootPart
         end
     end
 end
 
--- ESP Toggle
+-- ESP Management
 local espEnabled = false
 local espBoxes = {}
 
@@ -88,24 +72,10 @@ local function updateESP()
     end
 end
 
-local function toggleESP(state)
-    espEnabled = state
-    if state then
-        print("ESP enabled.")
-        updateESP() -- Call updateESP when enabled
-    else
-        print("ESP disabled.")
-        for _, box in ipairs(espBoxes) do
-            box:Destroy() -- Clear ESP boxes
-        end
-        espBoxes = {}
-    end
-end
-
 -- Main Tab for core features
 local MainTab = Window:CreateTab("Main", 4483362458)
 
--- Section for Buttons
+-- Buttons Section
 MainTab:CreateSection("Buttons")
 
 -- Admin Button
@@ -116,14 +86,29 @@ MainTab:CreateButton({
     end,
 })
 
--- Admin Teleport Tool
+-- Teleport Tool Button
 MainTab:CreateButton({
-    Name = "Admin Teleport",
+    Name = "Teleport Tool",
     Callback = function()
-        local targetPlayer = game.Players:GetPlayers()[1] -- Replace with logic to select a target player
-        if targetPlayer and targetPlayer.Character and targetPlayer.Character:FindFirstChild("HumanoidRootPart") then
-            player.Character.HumanoidRootPart.CFrame = targetPlayer.Character.HumanoidRootPart.CFrame
-        end
+        local tool = Instance.new("Tool")
+        tool.Name = "Teleport Tool"
+        tool.RequiresHandle = false
+        
+        -- Teleport functionality on activation
+        tool.Activated:Connect(function()
+            local mouse = game.Players.LocalPlayer:GetMouse()
+            local character = game.Players.LocalPlayer.Character
+            if character and mouse and mouse.Hit then
+                character:MoveTo(mouse.Hit.p)
+                print("Teleported to: " .. tostring(mouse.Hit.p))
+            else
+                print("Failed to teleport. Character or mouse not found.")
+            end
+        end)
+
+        -- Parent the tool to the player's backpack
+        tool.Parent = game.Players.LocalPlayer.Backpack
+        print("Teleport Tool added to backpack.")
     end,
 })
 
@@ -143,14 +128,59 @@ MainTab:CreateButton({
     end,
 })
 
--- Section for Toggles
+-- Sliders Section
+MainTab:CreateSection("Sliders")
+
+-- Walk Speed Slider
+MainTab:CreateSlider({
+    Name = "Walkspeed",
+    Range = {16, 500}, -- Min and Max values
+    Increment = 1, -- Increment value
+    Suffix = "Walk Speed",
+    CurrentValue = 16, -- Initial value
+    Callback = function(value)
+        local humanoid = getHumanoid()
+        if humanoid then
+            humanoid.WalkSpeed = value
+        end
+    end,
+})
+
+-- Jump Power Slider
+MainTab:CreateSlider({
+    Name = "Jump Power",
+    Range = {50, 500}, -- Min and Max values
+    Increment = 1, -- Increment value
+    Suffix = "Jump Power",
+    CurrentValue = 50, -- Initial value
+    Callback = function(value)
+        local humanoid = getHumanoid()
+        if humanoid then
+            humanoid.JumpPower = value
+        end
+    end,
+})
+
+-- Toggles Section
 MainTab:CreateSection("Toggles")
 
 -- ESP Toggle
 MainTab:CreateToggle({
     Name = "ESP Toggle",
     CurrentValue = false,
-    Callback = toggleESP,
+    Callback = function(state)
+        espEnabled = state
+        if state then
+            print("ESP enabled.")
+            updateESP() -- Call updateESP when enabled
+        else
+            print("ESP disabled.")
+            for _, box in ipairs(espBoxes) do
+                box:Destroy() -- Clear ESP boxes
+            end
+            espBoxes = {}
+        end
+    end,
 })
 
 -- Infinite Jump Toggle
@@ -193,47 +223,14 @@ MainTab:CreateToggle({
     end,
 })
 
--- Section for Sliders
-MainTab:CreateSection("Sliders")
-
--- Walk Speed Slider
-MainTab:CreateSlider({
-    Name = "Walkspeed",
-    Range = {16, 500}, -- Min and Max values
-    Increment = 1, -- Increment value
-    Suffix = "Walk Speed",
-    CurrentValue = 16, -- Initial value
-    Callback = function(value)
-        local humanoid = getHumanoid()
-        if humanoid then
-            humanoid.WalkSpeed = value
-        end
-    end,
-})
-
--- Jump Power Slider
-MainTab:CreateSlider({
-    Name = "Jump Power",
-    Range = {50, 500}, -- Min and Max values
-    Increment = 1, -- Increment value
-    Suffix = "Jump Power",
-    CurrentValue = 50, -- Initial value
-    Callback = function(value)
-        local humanoid = getHumanoid()
-        if humanoid then
-            humanoid.JumpPower = value
-        end
-    end,
-})
-
--- Section for Copy Feature
-MainTab:CreateSection("Copy Feature")
+-- Other Functionalities Section
+MainTab:CreateSection("Other Functionalities")
 
 -- Copy 'bang PlayerName' to clipboard toggle
 local copyEnabled = false
 MainTab:CreateToggle({
     Name = "Copy 'bang PlayerName' on click",
-    CurrentValue = false, -- Default value (off)
+    CurrentValue = false,
     Callback = function(state)
         copyEnabled = state
         if state then
@@ -251,6 +248,7 @@ end
 
 -- Function to copy player name from any distance, no aiming required
 local function setupClickToCopy()
+    local player = game.Players.LocalPlayer
     local mouse = player:GetMouse()
 
     mouse.Button1Down:Connect(function()
