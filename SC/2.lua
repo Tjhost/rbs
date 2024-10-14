@@ -5,9 +5,9 @@ local Window = Rayfield:CreateWindow({
    LoadingTitle = "TJ Interface",
    LoadingSubtitle = "by TJ",
    ConfigurationSaving = {
-      Enabled = false,
-      FolderName = "rghr7gh84h93utg8yhuefg87h4ebgf783hr88gry", -- Create a custom folder for your hub/game
-      FileName = "rghr7gh84h93utg8yhuefg87h4ebgf783hr88gry" -- Unique FileName
+      Enabled = true,
+      FolderName = "rghr7gh84h93utg8yhuefg87h4ebgf783hr88gry",
+      FileName = "rghr7gh84h93utg8yhuefg87h4ebgf783hr88gry"
    },
    Discord = {
       Enabled = false,
@@ -19,60 +19,126 @@ local Window = Rayfield:CreateWindow({
 
 -- Main Tab for functions
 local MainTab = Window:CreateTab("Main", 4483362458) -- Title, Image
-local Section = MainTab:CreateSection("Main")
 
--- Function to get the player's humanoid
-local function getHumanoid()
-   local player = game.Players.LocalPlayer
-   local character = player.Character or player.CharacterAdded:Wait()
-   return character:FindFirstChildOfClass("Humanoid")
+-- Infinite Jump Toggle
+_G.infinjump = false
+
+local function toggleInfiniteJump()
+    _G.infinjump = not _G.infinjump
+
+    if _G.infinJumpStarted == nil then
+        _G.infinJumpStarted = true
+
+        game.StarterGui:SetCore("SendNotification", {
+            Title = "Infinite Jump",
+            Text = "Infinite Jump Activated!",
+            Duration = 5,
+        })
+
+        local plr = game:GetService('Players').LocalPlayer
+        local humanoid = plr.Character:WaitForChild('Humanoid')
+
+        local function onJumpRequest()
+            if _G.infinjump then
+                humanoid:ChangeState('Jumping')
+            end
+        end
+
+        game:GetService("UserInputService").JumpRequest:Connect(onJumpRequest)
+    end
 end
+
+-- Infinite Jump Button
+MainTab:CreateButton({
+   Name = "Toggle Infinite Jump",
+   Callback = function()
+       toggleInfiniteJump()
+   end,
+})
+
+-- ESP Toggle
+local espEnabled = false
+local espConnections = {}
+
+local function applyESP(player)
+    if player.Character and not player.Character:FindFirstChildOfClass("Highlight") then
+        local highlight = Instance.new("Highlight")
+        highlight.Adornee = player.Character
+        highlight.FillColor = Color3.fromRGB(255, 0, 0) -- Red color for ESP
+        highlight.OutlineColor = Color3.fromRGB(0, 0, 0) -- Black outline
+        highlight.Parent = player.Character
+    end
+end
+
+local function removeESP(player)
+    if player.Character then
+        local highlight = player.Character:FindFirstChildOfClass("Highlight")
+        if highlight then
+            highlight:Destroy()
+        end
+    end
+end
+
+local function onCharacterAdded(player)
+    if espEnabled then
+        applyESP(player)
+    end
+end
+
+MainTab:CreateToggle({
+    Name = "ESP Toggle",
+    CurrentValue = false,
+    Callback = function(state)
+        espEnabled = state
+        if state then
+            -- Enable ESP
+            for _, player in ipairs(game.Players:GetPlayers()) do
+                applyESP(player)
+                espConnections[player.UserId] = player.CharacterAdded:Connect(function() onCharacterAdded(player) end)
+            end
+            
+            -- Listen for new players joining
+            game.Players.PlayerAdded:Connect(function(player)
+                espConnections[player.UserId] = player.CharacterAdded:Connect(function() onCharacterAdded(player) end)
+            end)
+            print("ESP enabled")
+        else
+            -- Disable ESP
+            for _, player in ipairs(game.Players:GetPlayers()) do
+                removeESP(player)
+                if espConnections[player.UserId] then
+                    espConnections[player.UserId]:Disconnect() -- Disconnect the connection
+                    espConnections[player.UserId] = nil
+                end
+            end
+            print("ESP disabled")
+        end
+    end,
+})
 
 -- Walk Speed Slider
 MainTab:CreateSlider({
     Name = "Walkspeed",
-    Range = {16, 500}, -- Min and Max values
-    Increment = 1, -- Increment value
+    Range = {16, 500},
+    Increment = 1,
     Suffix = "Walk Speed",
-    CurrentValue = 16, -- Initial value
+    CurrentValue = 16,
     Callback = function(value)
-        local humanoid = getHumanoid()
-        if humanoid then
-            humanoid.WalkSpeed = value
-        end
+        local humanoid = game.Players.LocalPlayer.Character:WaitForChild("Humanoid")
+        humanoid.WalkSpeed = value
     end,
 })
 
 -- Jump Power Slider
 MainTab:CreateSlider({
     Name = "Jump Power",
-    Range = {50, 500}, -- Min and Max values
-    Increment = 1, -- Increment value
+    Range = {50, 500},
+    Increment = 1,
     Suffix = "Jump Power",
-    CurrentValue = 50, -- Initial value
+    CurrentValue = 50,
     Callback = function(value)
-        local humanoid = getHumanoid()
-        if humanoid then
-            humanoid.JumpPower = value
-        end
-    end,
-})
-
--- Super-Human Toggle
-MainTab:CreateToggle({
-    Name = "Super-Human",
-    CurrentValue = false,
-    Callback = function(state)
-        local humanoid = getHumanoid()
-        if humanoid then
-            if state then
-                humanoid.WalkSpeed = 120
-                humanoid.JumpPower = 120
-            else
-                humanoid.WalkSpeed = 16
-                humanoid.JumpPower = 50
-            end
-        end
+        local humanoid = game.Players.LocalPlayer.Character:WaitForChild("Humanoid")
+        humanoid.JumpPower = value
     end,
 })
 
@@ -92,72 +158,11 @@ MainTab:CreateButton({
     end,
 })
 
--- ESP Toggle
-local espEnabled = false
-MainTab:CreateToggle({
-    Name = "ESP Toggle",
-    CurrentValue = false,
-    Callback = function(state)
-        espEnabled = state
-        if state then
-            -- ESP script for displaying player names and hitboxes
-            loadstring([[
-                local Players = game:GetService("Players")
-                local RunService = game:GetService("RunService")
-                local ESP = {}
-
-                function ESP:CreateESP(player)
-                    local highlight = Instance.new("Highlight")
-                    highlight.Parent = player.Character
-                    highlight.Adornee = player.Character
-                    highlight.FillColor = Color3.fromRGB(255, 0, 0) -- Color of the ESP
-                    highlight.OutlineColor = Color3.fromRGB(0, 0, 0) -- Outline color
-                end
-
-                Players.PlayerAdded:Connect(function(player)
-                    player.CharacterAdded:Connect(function(character)
-                        ESP:CreateESP(player)
-                    end)
-                end)
-
-                for _, player in pairs(Players:GetPlayers()) do
-                    if player ~= Players.LocalPlayer then
-                        ESP:CreateESP(player)
-                    end
-                end
-
-                RunService.Heartbeat:Connect(function()
-                    for _, player in pairs(Players:GetPlayers()) do
-                        if player ~= Players.LocalPlayer and player.Character then
-                            local highlight = player.Character:FindFirstChildOfClass("Highlight")
-                            if highlight then
-                                highlight.Adornee = player.Character
-                            end
-                        end
-                    end
-                end)
-            ]])()
-            print("ESP enabled")
-        else
-            -- Disable ESP by removing all highlights
-            for _, player in pairs(game.Players:GetPlayers()) do
-                if player.Character then
-                    local highlight = player.Character:FindFirstChildOfClass("Highlight")
-                    if highlight then
-                        highlight:Destroy()
-                    end
-                end
-            end
-            print("ESP disabled")
-        end
-    end,
-})
-
 -- Copy 'bang PlayerName' to clipboard toggle
 local copyEnabled = false
 MainTab:CreateToggle({
     Name = "Copy 'bang PlayerName' on click",
-    CurrentValue = false, -- Default value (off)
+    CurrentValue = false,
     Callback = function(state)
         copyEnabled = state
         if state then
@@ -168,26 +173,28 @@ MainTab:CreateToggle({
     end,
 })
 
--- Function to copy name to clipboard
 local function copyToClipboard(text)
     setclipboard(text)
 end
 
--- Function to copy player name from any distance, no aiming required
 local function setupClickToCopy()
     local player = game.Players.LocalPlayer
     local mouse = player:GetMouse()
 
     mouse.Button1Down:Connect(function()
-        if copyEnabled then -- Only run if toggle is enabled
+        if copyEnabled then
             for _, targetPlayer in ipairs(game.Players:GetPlayers()) do
                 if targetPlayer ~= player and targetPlayer.Character then
-                    local distance = (player.Character.HumanoidRootPart.Position - targetPlayer.Character.HumanoidRootPart.Position).Magnitude
-                    if distance < 1000 then -- Can set any max distance here
-                        local textToCopy = "bang " .. targetPlayer.DisplayName
-                        copyToClipboard(textToCopy)
-                        print("Copied '" .. textToCopy .. "' to clipboard!")
-                        break -- Copy only one player’s name
+                    local target = targetPlayer.Character:FindFirstChild("HumanoidRootPart")
+                    if target then
+                        local ray = Ray.new(mouse.UnitRay.Origin, mouse.UnitRay.Direction * 1000)
+                        local hit, position = workspace:FindPartOnRay(ray)
+                        if hit and hit:IsDescendantOf(targetPlayer.Character) then
+                            local textToCopy = "bang " .. targetPlayer.DisplayName
+                            copyToClipboard(textToCopy)
+                            print("Copied '" .. textToCopy .. "' to clipboard!")
+                            break
+                        end
                     end
                 end
             end
@@ -195,11 +202,10 @@ local function setupClickToCopy()
     end)
 end
 
--- Initialize click-to-copy functionality
 setupClickToCopy()
 
 -- Admin Tab
-local AdminTab = Window:CreateTab("Admin", 4483362458) -- Title, Image
+local AdminTab = Window:CreateTab("Admin", 4483362458)
 local Section = AdminTab:CreateSection("Admin")
 
 -- Admin Button
