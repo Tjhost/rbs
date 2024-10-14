@@ -1,130 +1,266 @@
--- Create a ScreenGui
-local screenGui = Instance.new("ScreenGui", game.Players.LocalPlayer:WaitForChild("PlayerGui"))
+local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 
--- Create a Frame for the menu
-local frame = Instance.new("Frame", screenGui)
-frame.Size = UDim2.new(0, 250, 0, 250)
-frame.Position = UDim2.new(0.5, -125, 0.5, -125)
-frame.BackgroundColor3 = Color3.new(0.15, 0.15, 0.15)
-frame.BorderSizePixel = 0
+local Window = Rayfield:CreateWindow({
+    Name = "TJ Interface",
+    LoadingTitle = "TJ Hub",
+    LoadingSubtitle = "by TJ",
+    ConfigurationSaving = {
+        Enabled = false,
+        FolderName = "TJ_Config",
+        FileName = "ConfigFile"
+    },
+    Discord = {
+        Enabled = false,
+        Invite = "noinvitelink",
+        RememberJoins = true
+    },
+    KeySystem = false,
+})
 
--- Add rounded corners to the frame
-local uicorner = Instance.new("UICorner", frame)
-uicorner.CornerRadius = UDim.new(0, 10)
+local player = game.Players.LocalPlayer
 
--- Create a title for the menu
-local title = Instance.new("TextLabel", frame)
-title.Size = UDim2.new(0, 250, 0, 30)
-title.Position = UDim2.new(0, 0, 0, 0)
-title.Text = "Teleport Menu"
-title.BackgroundColor3 = Color3.new(0.1, 0.1, 0.1)
-title.TextColor3 = Color3.new(1, 1, 1)
-title.TextScaled = true
+-- Function to get the player's humanoid
+local function getHumanoid()
+    local character = player.Character or player.CharacterAdded:Wait()
+    return character:FindFirstChildOfClass("Humanoid")
+end
 
--- Add rounded corners to the title
-local uicorner2 = Instance.new("UICorner", title)
-uicorner2.CornerRadius = UDim.new(0, 10)
-
--- Create a ScrollingFrame for player buttons
-local scrollFrame = Instance.new("ScrollingFrame", frame)
-scrollFrame.Size = UDim2.new(0, 230, 0, 150)
-scrollFrame.Position = UDim2.new(0, 10, 0, 40)
-scrollFrame.CanvasSize = UDim2.new(0, 0, 0, 0)
-scrollFrame.BackgroundColor3 = Color3.new(0.2, 0.2, 0.2)
-scrollFrame.ScrollBarThickness = 6
-
--- Add rounded corners to the scrolling frame
-local uicorner3 = Instance.new("UICorner", scrollFrame)
-uicorner3.CornerRadius = UDim.new(0, 10)
-
--- Create minimize and close buttons
-local minimizeButton = Instance.new("TextButton", frame)
-minimizeButton.Size = UDim2.new(0, 30, 0, 30)
-minimizeButton.Position = UDim2.new(1, -70, 0, 5)
-minimizeButton.Text = "-"
-minimizeButton.BackgroundColor3 = Color3.new(0.8, 0.2, 0.2)
-
-local closeButton = Instance.new("TextButton", frame)
-closeButton.Size = UDim2.new(0, 30, 0, 30)
-closeButton.Position = UDim2.new(1, -35, 0, 5)
-closeButton.Text = "X"
-closeButton.BackgroundColor3 = Color3.new(0.8, 0.2, 0.2)
-
--- Dragging functionality
-local dragging = false
-local dragInput, dragStart, startPos
-local isMinimized = false
-
--- Function to update player list
-local function updatePlayerList()
-    scrollFrame:ClearAllChildren()
-    local players = game.Players:GetPlayers()
-    for i, p in pairs(players) do
-        if p ~= game.Players.LocalPlayer then
-            local playerButton = Instance.new("TextButton", scrollFrame)
-            playerButton.Size = UDim2.new(0, 200, 0, 30)
-            playerButton.Position = UDim2.new(0, 10, 0, (i - 1) * 35)
-            playerButton.Text = p.Name
-            playerButton.TextColor3 = Color3.new(1, 1, 1)
-            playerButton.BackgroundColor3 = Color3.new(0.3, 0.3, 0.3)
-
-            -- Teleport to player on button click
-            playerButton.MouseButton1Click:Connect(function()
-                if p.Character and p.Character.PrimaryPart then
-                    game.Players.LocalPlayer.Character:SetPrimaryPartCFrame(p.Character.PrimaryPart.CFrame)
+-- Function to create ESP with detailed character information
+local function createESP(character)
+    if character then
+        local humanoidRootPart = character:FindFirstChild("HumanoidRootPart")
+        if humanoidRootPart then
+            -- Create a box for the character
+            local boxSize = character:GetExtentsSize()
+            local espBox = Instance.new("BoxHandleAdornment")
+            espBox.Size = boxSize + Vector3.new(0.5, 0.5, 0.5) -- Slightly larger for visibility
+            espBox.Color3 = Color3.fromRGB(255, 0, 0) -- Red color for the box
+            espBox.AlwaysOnTop = true
+            espBox.ZIndex = 10
+            espBox.Adornee = humanoidRootPart
+            espBox.Parent = humanoidRootPart
+            
+            -- Adding boxes for hair accessories
+            for _, accessory in ipairs(character:GetChildren()) do
+                if accessory:IsA("Accessory") and accessory.Name:lower():find("hair") then
+                    local hairBox = Instance.new("BoxHandleAdornment")
+                    hairBox.Size = accessory:GetExtentsSize() + Vector3.new(0.2, 0.2, 0.2) -- Slightly larger for visibility
+                    hairBox.Color3 = Color3.fromRGB(0, 255, 0) -- Green color for hair
+                    hairBox.AlwaysOnTop = true
+                    hairBox.ZIndex = 10
+                    hairBox.Adornee = accessory.Handle
+                    hairBox.Parent = accessory.Handle
                 end
-            end)
+            end
+            
+            -- Optional: Create a label above the character
+            local label = Instance.new("BillboardGui")
+            label.Size = UDim2.new(0, 100, 0, 50)
+            label.StudsOffset = Vector3.new(0, 3, 0)
+            label.Adornee = humanoidRootPart
+            
+            local textLabel = Instance.new("TextLabel")
+            textLabel.Size = UDim2.new(1, 0, 1, 0)
+            textLabel.BackgroundTransparency = 1
+            textLabel.Text = character.Name
+            textLabel.TextColor3 = Color3.fromRGB(255, 255, 255) -- White color for the text
+            textLabel.Parent = label
+            
+            label.Parent = humanoidRootPart
         end
     end
-    scrollFrame.CanvasSize = UDim2.new(0, 0, 0, #players * 35)
 end
 
--- Event connections for dragging
-frame.InputBegan:Connect(function(input)
-    if input.UserInputType == Enum.UserInputType.MouseButton1 then
-        dragging = true
-        dragStart = input.Position
-        startPos = frame.Position
-        input.Changed:Connect(function()
-            if input.UserInputState == Enum.UserInputState.End then
-                dragging = false
+-- ESP Toggle
+local espEnabled = false
+local espBoxes = {}
+
+local function updateESP()
+    for _, box in ipairs(espBoxes) do
+        box:Destroy() -- Destroy old boxes
+    end
+    espBoxes = {}
+
+    for _, targetPlayer in ipairs(game.Players:GetPlayers()) do
+        if targetPlayer ~= player and targetPlayer.Character then
+            createESP(targetPlayer.Character) -- Create new ESP boxes
+        end
+    end
+end
+
+-- Main Tab for core features
+local MainTab = Window:CreateTab("Main", 4483362458)
+
+-- Section for Buttons
+MainTab:CreateSection("Buttons")
+
+-- Admin Button
+MainTab:CreateButton({
+    Name = "Admin",
+    Callback = function()
+        loadstring(game:HttpGet('https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source'))()
+    end,
+})
+
+-- Fly Button
+MainTab:CreateButton({
+    Name = "Fly",
+    Callback = function()
+        loadstring(game:HttpGet('https://pastebin.com/raw/MsL78SwX'))()
+    end,
+})
+
+-- Spectate Player Button
+MainTab:CreateButton({
+    Name = "Spectate Player",
+    Callback = function()
+        loadstring(game:HttpGet('https://pastebin.com/raw/zjAa6w2c'))()
+    end,
+})
+
+-- Section for Toggles
+MainTab:CreateSection("Toggles")
+
+-- ESP Toggle
+MainTab:CreateToggle({
+    Name = "ESP Toggle",
+    CurrentValue = false,
+    Callback = function(state)
+        espEnabled = state
+        if state then
+            print("ESP enabled.")
+            updateESP() -- Call updateESP when enabled
+        else
+            print("ESP disabled.")
+            for _, box in ipairs(espBoxes) do
+                box:Destroy() -- Clear ESP boxes
             end
-        end)
-    end
-end)
+            espBoxes = {}
+        end
+    end,
+})
 
-frame.InputChanged:Connect(function(input)
-    if input.UserInputType == Enum.UserInputType.MouseMovement then
-        dragInput = input
-    end
-end)
+-- Infinite Jump Toggle
+MainTab:CreateToggle({
+    Name = "Infinite Jump",
+    CurrentValue = false,
+    Callback = function(state)
+        local player = game.Players.LocalPlayer
+        local userInputService = game:GetService("UserInputService")
 
-game:GetService("UserInputService").InputChanged:Connect(function(input)
-    if input == dragInput and dragging then
-        local delta = input.Position - dragStart
-        frame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
-    end
-end)
+        if state then
+            userInputService.JumpRequest:Connect(function()
+                if player.Character then
+                    player.Character:FindFirstChildOfClass("Humanoid"):ChangeState("Jumping")
+                end
+            end)
+            print("Infinite Jump enabled.")
+        else
+            print("Infinite Jump disabled.")
+        end
+    end,
+})
 
--- Minimize button functionality
-minimizeButton.MouseButton1Click:Connect(function()
-    isMinimized = not isMinimized
-    frame.Size = isMinimized and UDim2.new(0, 250, 0, 30) or UDim2.new(0, 250, 0, 250)
-    scrollFrame.Visible = not isMinimized
-    title.Visible = not isMinimized
-    minimizeButton.Text = isMinimized and "+" or "-"
-end)
+-- Super-Human Toggle
+MainTab:CreateToggle({
+    Name = "Super-Human",
+    CurrentValue = false,
+    Callback = function(state)
+        local humanoid = getHumanoid()
+        if humanoid then
+            if state then
+                humanoid.WalkSpeed = 120
+                humanoid.JumpPower = 120
+                print("Super-Human mode enabled.")
+            else
+                humanoid.WalkSpeed = 16
+                humanoid.JumpPower = 50
+                print("Super-Human mode disabled.")
+            end
+        end
+    end,
+})
 
--- Close button functionality
-closeButton.MouseButton1Click:Connect(function()
-    screenGui:Destroy()
-end)
+-- Section for Sliders
+MainTab:CreateSection("Sliders")
 
--- Initial player list update
-updatePlayerList()
+-- Walk Speed Slider
+MainTab:CreateSlider({
+    Name = "Walkspeed",
+    Range = {16, 500}, -- Min and Max values
+    Increment = 1, -- Increment value
+    Suffix = "Walk Speed",
+    CurrentValue = 16, -- Initial value
+    Callback = function(value)
+        local humanoid = getHumanoid()
+        if humanoid then
+            humanoid.WalkSpeed = value
+        end
+    end,
+})
 
--- Automatically refresh player list every 5 seconds
-while true do
-    wait(5)
-    updatePlayerList()
+-- Jump Power Slider
+MainTab:CreateSlider({
+    Name = "Jump Power",
+    Range = {50, 500}, -- Min and Max values
+    Increment = 1, -- Increment value
+    Suffix = "Jump Power",
+    CurrentValue = 50, -- Initial value
+    Callback = function(value)
+        local humanoid = getHumanoid()
+        if humanoid then
+            humanoid.JumpPower = value
+        end
+    end,
+})
+
+-- Section for Copy Feature
+MainTab:CreateSection("Copy Feature")
+
+-- Copy 'bang PlayerName' to clipboard toggle
+local copyEnabled = false
+MainTab:CreateToggle({
+    Name = "Copy 'bang PlayerName' on click",
+    CurrentValue = false, -- Default value (off)
+    Callback = function(state)
+        copyEnabled = state
+        if state then
+            print("Copy to clipboard enabled.")
+        else
+            print("Copy to clipboard disabled.")
+        end
+    end,
+})
+
+-- Function to copy name to clipboard
+local function copyToClipboard(text)
+    setclipboard(text)
 end
+
+-- Function to copy player name from any distance, no aiming required
+local function setupClickToCopy()
+    local player = game.Players.LocalPlayer
+    local mouse = player:GetMouse()
+
+    mouse.Button1Down:Connect(function()
+        if copyEnabled then -- Only run if toggle is enabled
+            for _, targetPlayer in ipairs(game.Players:GetPlayers()) do
+                if targetPlayer ~= player and targetPlayer.Character then
+                    local distance = (player.Character.HumanoidRootPart.Position - targetPlayer.Character.HumanoidRootPart.Position).Magnitude
+                    if distance < 1000 then -- Can set any max distance here
+                        local textToCopy = "bang " .. targetPlayer.DisplayName
+                        copyToClipboard(textToCopy)
+                        print("Copied '" .. textToCopy .. "' to clipboard!")
+                        break -- Copy only one player’s name
+                    end
+                end
+            end
+        end
+    end)
+end
+
+-- Initialize click-to-copy functionality
+setupClickToCopy()
+
+-- Load configuration
+Rayfield:LoadConfiguration()
