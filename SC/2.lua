@@ -88,6 +88,20 @@ local function updateESP()
     end
 end
 
+local function toggleESP(state)
+    espEnabled = state
+    if state then
+        print("ESP enabled.")
+        updateESP() -- Call updateESP when enabled
+    else
+        print("ESP disabled.")
+        for _, box in ipairs(espBoxes) do
+            box:Destroy() -- Clear ESP boxes
+        end
+        espBoxes = {}
+    end
+end
+
 -- Main Tab for core features
 local MainTab = Window:CreateTab("Main", 4483362458)
 
@@ -99,6 +113,17 @@ MainTab:CreateButton({
     Name = "Admin",
     Callback = function()
         loadstring(game:HttpGet('https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source'))()
+    end,
+})
+
+-- Admin Teleport Tool
+MainTab:CreateButton({
+    Name = "Admin Teleport",
+    Callback = function()
+        local targetPlayer = game.Players:GetPlayers()[1] -- Replace with logic to select a target player
+        if targetPlayer and targetPlayer.Character and targetPlayer.Character:FindFirstChild("HumanoidRootPart") then
+            player.Character.HumanoidRootPart.CFrame = targetPlayer.Character.HumanoidRootPart.CFrame
+        end
     end,
 })
 
@@ -125,19 +150,7 @@ MainTab:CreateSection("Toggles")
 MainTab:CreateToggle({
     Name = "ESP Toggle",
     CurrentValue = false,
-    Callback = function(state)
-        espEnabled = state
-        if state then
-            print("ESP enabled.")
-            updateESP() -- Call updateESP when enabled
-        else
-            print("ESP disabled.")
-            for _, box in ipairs(espBoxes) do
-                box:Destroy() -- Clear ESP boxes
-            end
-            espBoxes = {}
-        end
-    end,
+    Callback = toggleESP,
 })
 
 -- Infinite Jump Toggle
@@ -145,7 +158,6 @@ MainTab:CreateToggle({
     Name = "Infinite Jump",
     CurrentValue = false,
     Callback = function(state)
-        local player = game.Players.LocalPlayer
         local userInputService = game:GetService("UserInputService")
 
         if state then
@@ -239,7 +251,6 @@ end
 
 -- Function to copy player name from any distance, no aiming required
 local function setupClickToCopy()
-    local player = game.Players.LocalPlayer
     local mouse = player:GetMouse()
 
     mouse.Button1Down:Connect(function()
