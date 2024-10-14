@@ -50,13 +50,6 @@ closeButton.Position = UDim2.new(1, -35, 0, 5)
 closeButton.Text = "X"
 closeButton.BackgroundColor3 = Color3.new(0.8, 0.2, 0.2)
 
--- Create a refresh button
-local refreshButton = Instance.new("TextButton", frame)
-refreshButton.Size = UDim2.new(0, 80, 0, 30)
-refreshButton.Position = UDim2.new(0.5, -40, 0, 200)
-refreshButton.Text = "Refresh"
-refreshButton.BackgroundColor3 = Color3.new(0.2, 0.8, 0.2)
-
 -- Dragging functionality
 local dragging = false
 local dragInput, dragStart, startPos
@@ -127,10 +120,11 @@ closeButton.MouseButton1Click:Connect(function()
     screenGui:Destroy()
 end)
 
--- Refresh button functionality
-refreshButton.MouseButton1Click:Connect(function()
-    updatePlayerList()
-end)
-
 -- Initial player list update
 updatePlayerList()
+
+-- Automatically refresh player list every 5 seconds
+while true do
+    wait(5)
+    updatePlayerList()
+end
