@@ -1,130 +1,247 @@
--- Create a ScreenGui
-local screenGui = Instance.new("ScreenGui", game.Players.LocalPlayer:WaitForChild("PlayerGui"))
+local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 
--- Create a Frame for the menu
-local frame = Instance.new("Frame", screenGui)
-frame.Size = UDim2.new(0, 250, 0, 250)
-frame.Position = UDim2.new(0.5, -125, 0.5, -125)
-frame.BackgroundColor3 = Color3.new(0.15, 0.15, 0.15)
-frame.BorderSizePixel = 0
+local Window = Rayfield:CreateWindow({
+   Name = "TJ",
+   LoadingTitle = "TJ Interface",
+   LoadingSubtitle = "by TJ",
+   ConfigurationSaving = {
+      Enabled = false,
+      FolderName = "rghr7gh84h93utg8yhuefg87h4ebgf783hr88gry",
+      FileName = "rghr7gh84h93utg8yhuefg87h4ebgf783hr88gry"
+   },
+   Discord = {
+      Enabled = false,
+      Invite = "noinvitelink",
+      RememberJoins = true
+   },
+   KeySystem = false,
+})
 
--- Add rounded corners to the frame
-local uicorner = Instance.new("UICorner", frame)
-uicorner.CornerRadius = UDim.new(0, 10)
+-- Main Tab
+local MainTab = Window:CreateTab("Main", 4483362458)
+local Section = MainTab:CreateSection("Main")
 
--- Create a title for the menu
-local title = Instance.new("TextLabel", frame)
-title.Size = UDim2.new(0, 250, 0, 30)
-title.Position = UDim2.new(0, 0, 0, 0)
-title.Text = "Teleport Menu"
-title.BackgroundColor3 = Color3.new(0.1, 0.1, 0.1)
-title.TextColor3 = Color3.new(1, 1, 1)
-title.TextScaled = true
+-- Function to get the player's humanoid
+local function getHumanoid()
+   local player = game.Players.LocalPlayer
+   local character = player.Character or player.CharacterAdded:Wait()
+   return character:FindFirstChildOfClass("Humanoid")
+end
 
--- Add rounded corners to the title
-local uicorner2 = Instance.new("UICorner", title)
-uicorner2.CornerRadius = UDim.new(0, 10)
+-- Infinite Jump functionality
+local infiniteJumpEnabled = false
+local function enableInfiniteJump()
+    game.UserInputService.JumpRequest:Connect(function()
+        if infiniteJumpEnabled then
+            local humanoid = getHumanoid()
+            if humanoid then
+                humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
+            end
+        end
+    end)
+end
 
--- Create a ScrollingFrame for player buttons
-local scrollFrame = Instance.new("ScrollingFrame", frame)
-scrollFrame.Size = UDim2.new(0, 230, 0, 150)
-scrollFrame.Position = UDim2.new(0, 10, 0, 40)
-scrollFrame.CanvasSize = UDim2.new(0, 0, 0, 0)
-scrollFrame.BackgroundColor3 = Color3.new(0.2, 0.2, 0.2)
-scrollFrame.ScrollBarThickness = 6
+MainTab:CreateToggle({
+    Name = "Infinite Jump",
+    CurrentValue = false,
+    Callback = function(state)
+        infiniteJumpEnabled = state
+        if infiniteJumpEnabled then
+            enableInfiniteJump()
+            print("Infinite Jump Enabled")
+        else
+            print("Infinite Jump Disabled")
+        end
+    end,
+})
 
--- Add rounded corners to the scrolling frame
-local uicorner3 = Instance.new("UICorner", scrollFrame)
-uicorner3.CornerRadius = UDim.new(0, 10)
+-- Walk Speed Slider
+MainTab:CreateSlider({
+    Name = "Walkspeed",
+    Range = {16, 500},
+    Increment = 1,
+    Suffix = "Walk Speed",
+    CurrentValue = 16,
+    Callback = function(value)
+        local humanoid = getHumanoid()
+        if humanoid then
+            humanoid.WalkSpeed = value
+        end
+    end,
+})
 
--- Create minimize and close buttons
-local minimizeButton = Instance.new("TextButton", frame)
-minimizeButton.Size = UDim2.new(0, 30, 0, 30)
-minimizeButton.Position = UDim2.new(1, -70, 0, 5)
-minimizeButton.Text = "-"
-minimizeButton.BackgroundColor3 = Color3.new(0.8, 0.2, 0.2)
+-- Jump Power Slider
+MainTab:CreateSlider({
+    Name = "Jump Power",
+    Range = {50, 500},
+    Increment = 1,
+    Suffix = "Jump Power",
+    CurrentValue = 50,
+    Callback = function(value)
+        local humanoid = getHumanoid()
+        if humanoid then
+            humanoid.JumpPower = value
+        end
+    end,
+})
 
-local closeButton = Instance.new("TextButton", frame)
-closeButton.Size = UDim2.new(0, 30, 0, 30)
-closeButton.Position = UDim2.new(1, -35, 0, 5)
-closeButton.Text = "X"
-closeButton.BackgroundColor3 = Color3.new(0.8, 0.2, 0.2)
+-- Super-Human Toggle
+MainTab:CreateToggle({
+    Name = "Super-Human",
+    CurrentValue = false,
+    Callback = function(state)
+        local humanoid = getHumanoid()
+        if humanoid then
+            if state then
+                humanoid.WalkSpeed = 120
+                humanoid.JumpPower = 120
+            else
+                humanoid.WalkSpeed = 16
+                humanoid.JumpPower = 50
+            end
+        end
+    end,
+})
 
--- Dragging functionality
-local dragging = false
-local dragInput, dragStart, startPos
-local isMinimized = false
+-- Fly Button
+MainTab:CreateButton({
+    Name = "Fly",
+    Callback = function()
+        loadstring(game:HttpGet('https://pastebin.com/raw/MsL78SwX'))()
+    end,
+})
 
--- Function to update player list
-local function updatePlayerList()
-    scrollFrame:ClearAllChildren()
-    local players = game.Players:GetPlayers()
-    for i, p in pairs(players) do
-        if p ~= game.Players.LocalPlayer then
-            local playerButton = Instance.new("TextButton", scrollFrame)
-            playerButton.Size = UDim2.new(0, 200, 0, 30)
-            playerButton.Position = UDim2.new(0, 10, 0, (i - 1) * 35)
-            playerButton.Text = p.Name
-            playerButton.TextColor3 = Color3.new(1, 1, 1)
-            playerButton.BackgroundColor3 = Color3.new(0.3, 0.3, 0.3)
+-- Spectate Player Button
+MainTab:CreateButton({
+    Name = "Spectate Player",
+    Callback = function()
+        loadstring(game:HttpGet('https://pastebin.com/raw/zjAa6w2c'))()
+    end,
+})
 
-            -- Teleport to player on button click
-            playerButton.MouseButton1Click:Connect(function()
-                if p.Character and p.Character.PrimaryPart then
-                    game.Players.LocalPlayer.Character:SetPrimaryPartCFrame(p.Character.PrimaryPart.CFrame)
-                end
-            end)
+-- ESP Toggle
+local espEnabled = false
+local espInstances = {}
+
+local function enableESP()
+    for _, player in ipairs(game.Players:GetPlayers()) do
+        if player ~= game.Players.LocalPlayer and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+            local espBox = Instance.new("BoxHandleAdornment")
+            espBox.Size = Vector3.new(4, 6, 4)
+            espBox.Adornee = player.Character.HumanoidRootPart
+            espBox.AlwaysOnTop = true
+            espBox.ZIndex = 5
+            espBox.Color3 = Color3.new(1, 0, 0)
+            espBox.Transparency = 0.5
+            espBox.Parent = player.Character.HumanoidRootPart
+            table.insert(espInstances, espBox)
         end
     end
-    scrollFrame.CanvasSize = UDim2.new(0, 0, 0, #players * 35)
 end
 
--- Event connections for dragging
-frame.InputBegan:Connect(function(input)
-    if input.UserInputType == Enum.UserInputType.MouseButton1 then
-        dragging = true
-        dragStart = input.Position
-        startPos = frame.Position
-        input.Changed:Connect(function()
-            if input.UserInputState == Enum.UserInputState.End then
-                dragging = false
+local function disableESP()
+    for _, espBox in pairs(espInstances) do
+        if espBox and espBox.Parent then
+            espBox:Destroy()
+        end
+    end
+    espInstances = {}
+end
+
+MainTab:CreateToggle({
+    Name = "ESP Toggle",
+    CurrentValue = false,
+    Callback = function(state)
+        espEnabled = state
+        if espEnabled then
+            enableESP()
+        else
+            disableESP()
+        end
+    end,
+})
+
+-- Teleport Tool Button
+MainTab:CreateButton({
+    Name = "Teleport Tool",
+    Callback = function()
+        local tool = Instance.new("Tool")
+        tool.Name = "Teleport Tool"
+        tool.RequiresHandle = false
+        tool.Activated:Connect(function()
+            local mouse = game.Players.LocalPlayer:GetMouse()
+            local character = game.Players.LocalPlayer.Character
+            if character and mouse then
+                character:MoveTo(mouse.Hit.p)
             end
         end)
-    end
-end)
+        tool.Parent = game.Players.LocalPlayer.Backpack
+        print("Teleport Tool given.")
+    end,
+})
 
-frame.InputChanged:Connect(function(input)
-    if input.UserInputType == Enum.UserInputType.MouseMovement then
-        dragInput = input
-    end
-end)
+-- Admin Tab
+local AdminTab = Window:CreateTab("Admin", 4483362458)
+local Section = AdminTab:CreateSection("Admin")
 
-game:GetService("UserInputService").InputChanged:Connect(function(input)
-    if input == dragInput and dragging then
-        local delta = input.Position - dragStart
-        frame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
-    end
-end)
+-- Admin Button
+AdminTab:CreateButton({
+   Name = "Admin",
+   Callback = function()
+      loadstring(game:HttpGet('https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source'))()
+   end,
+})
 
--- Minimize button functionality
-minimizeButton.MouseButton1Click:Connect(function()
-    isMinimized = not isMinimized
-    frame.Size = isMinimized and UDim2.new(0, 250, 0, 30) or UDim2.new(0, 250, 0, 250)
-    scrollFrame.Visible = not isMinimized
-    title.Visible = not isMinimized
-    minimizeButton.Text = isMinimized and "+" or "-"
-end)
+-- Teleport GUI Button (Executes the script you provided)
+MainTab:CreateButton({
+    Name = "Teleport GUI",
+    Callback = function()
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/Tjhost/rbs/refs/heads/main/Sde.lua", true))()
+    end,
+})
 
--- Close button functionality
-closeButton.MouseButton1Click:Connect(function()
-    screenGui:Destroy()
-end)
+-- Copy 'bang PlayerName' to clipboard toggle
+local copyEnabled = false
+MainTab:CreateToggle({
+    Name = "Copy 'bang PlayerName' on click",
+    CurrentValue = false,
+    Callback = function(state)
+        copyEnabled = state
+        if state then
+            print("Copy to clipboard enabled.")
+        else
+            print("Copy to clipboard disabled.")
+        end
+    end,
+})
 
--- Initial player list update
-updatePlayerList()
-
--- Automatically refresh player list every 5 seconds
-while true do
-    wait(5)
-    updatePlayerList()
+local function copyToClipboard(text)
+    setclipboard(text)
 end
+
+local function setupClickToCopy()
+    local player = game.Players.LocalPlayer
+    local mouse = player:GetMouse()
+
+    mouse.Button1Down:Connect(function()
+        if copyEnabled then
+            for _, targetPlayer in ipairs(game.Players:GetPlayers()) do
+                if targetPlayer ~= player and targetPlayer.Character then
+                    local distance = (player.Character.HumanoidRootPart.Position - targetPlayer.Character.HumanoidRootPart.Position).Magnitude
+                    if distance < 1000 then
+                        local textToCopy = "bang " .. targetPlayer.DisplayName
+                        copyToClipboard(textToCopy)
+                        print("Copied '" .. textToCopy .. "' to clipboard!")
+                        break
+                    end
+                end
+            end
+        end
+    end)
+end
+
+-- Initialize click-to-copy functionality
+setupClickToCopy()
+
+-- Load configuration
+Rayfield:LoadConfiguration()
