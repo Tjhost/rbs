@@ -5,7 +5,7 @@ local Window = Rayfield:CreateWindow({
    LoadingTitle = "TJ Interface",
    LoadingSubtitle = "by TJ",
    ConfigurationSaving = {
-      Enabled = true,
+      Enabled = false,
       FolderName = "rghr7gh84h93utg8yhuefg87h4ebgf783hr88gry",
       FileName = "rghr7gh84h93utg8yhuefg87h4ebgf783hr88gry"
    },
@@ -17,101 +17,40 @@ local Window = Rayfield:CreateWindow({
    KeySystem = false,
 })
 
--- Main Tab for functions
-local MainTab = Window:CreateTab("Main", 4483362458) -- Title, Image
+-- Main Tab
+local MainTab = Window:CreateTab("Main", 4483362458)
+local Section = MainTab:CreateSection("Main")
 
--- Infinite Jump Toggle
-_G.infinjump = false
+-- Function to get the player's humanoid
+local function getHumanoid()
+   local player = game.Players.LocalPlayer
+   local character = player.Character or player.CharacterAdded:Wait()
+   return character:FindFirstChildOfClass("Humanoid")
+end
 
-local function toggleInfiniteJump()
-    _G.infinjump = not _G.infinjump
-
-    if _G.infinJumpStarted == nil then
-        _G.infinJumpStarted = true
-
-        game.StarterGui:SetCore("SendNotification", {
-            Title = "Infinite Jump",
-            Text = "Infinite Jump Activated!",
-            Duration = 5,
-        })
-
-        local plr = game:GetService('Players').LocalPlayer
-        local humanoid = plr.Character:WaitForChild('Humanoid')
-
-        local function onJumpRequest()
-            if _G.infinjump then
-                humanoid:ChangeState('Jumping')
+-- Infinite Jump functionality
+local infiniteJumpEnabled = false
+local function enableInfiniteJump()
+    game.UserInputService.JumpRequest:Connect(function()
+        if infiniteJumpEnabled then
+            local humanoid = getHumanoid()
+            if humanoid then
+                humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
             end
         end
-
-        game:GetService("UserInputService").JumpRequest:Connect(onJumpRequest)
-    end
-end
-
--- Infinite Jump Button
-MainTab:CreateButton({
-   Name = "Toggle Infinite Jump",
-   Callback = function()
-       toggleInfiniteJump()
-   end,
-})
-
--- ESP Toggle
-local espEnabled = false
-local espConnections = {}
-
-local function applyESP(player)
-    if player.Character and not player.Character:FindFirstChildOfClass("Highlight") then
-        local highlight = Instance.new("Highlight")
-        highlight.Adornee = player.Character
-        highlight.FillColor = Color3.fromRGB(255, 0, 0) -- Red color for ESP
-        highlight.OutlineColor = Color3.fromRGB(0, 0, 0) -- Black outline
-        highlight.Parent = player.Character
-    end
-end
-
-local function removeESP(player)
-    if player.Character then
-        local highlight = player.Character:FindFirstChildOfClass("Highlight")
-        if highlight then
-            highlight:Destroy()
-        end
-    end
-end
-
-local function onCharacterAdded(player)
-    if espEnabled then
-        applyESP(player)
-    end
+    end)
 end
 
 MainTab:CreateToggle({
-    Name = "ESP Toggle",
+    Name = "Infinite Jump",
     CurrentValue = false,
     Callback = function(state)
-        espEnabled = state
-        if state then
-            -- Enable ESP
-            for _, player in ipairs(game.Players:GetPlayers()) do
-                applyESP(player)
-                espConnections[player.UserId] = player.CharacterAdded:Connect(function() onCharacterAdded(player) end)
-            end
-            
-            -- Listen for new players joining
-            game.Players.PlayerAdded:Connect(function(player)
-                espConnections[player.UserId] = player.CharacterAdded:Connect(function() onCharacterAdded(player) end)
-            end)
-            print("ESP enabled")
+        infiniteJumpEnabled = state
+        if infiniteJumpEnabled then
+            enableInfiniteJump()
+            print("Infinite Jump Enabled")
         else
-            -- Disable ESP
-            for _, player in ipairs(game.Players:GetPlayers()) do
-                removeESP(player)
-                if espConnections[player.UserId] then
-                    espConnections[player.UserId]:Disconnect() -- Disconnect the connection
-                    espConnections[player.UserId] = nil
-                end
-            end
-            print("ESP disabled")
+            print("Infinite Jump Disabled")
         end
     end,
 })
@@ -124,8 +63,10 @@ MainTab:CreateSlider({
     Suffix = "Walk Speed",
     CurrentValue = 16,
     Callback = function(value)
-        local humanoid = game.Players.LocalPlayer.Character:WaitForChild("Humanoid")
-        humanoid.WalkSpeed = value
+        local humanoid = getHumanoid()
+        if humanoid then
+            humanoid.WalkSpeed = value
+        end
     end,
 })
 
@@ -137,8 +78,28 @@ MainTab:CreateSlider({
     Suffix = "Jump Power",
     CurrentValue = 50,
     Callback = function(value)
-        local humanoid = game.Players.LocalPlayer.Character:WaitForChild("Humanoid")
-        humanoid.JumpPower = value
+        local humanoid = getHumanoid()
+        if humanoid then
+            humanoid.JumpPower = value
+        end
+    end,
+})
+
+-- Super-Human Toggle
+MainTab:CreateToggle({
+    Name = "Super-Human",
+    CurrentValue = false,
+    Callback = function(state)
+        local humanoid = getHumanoid()
+        if humanoid then
+            if state then
+                humanoid.WalkSpeed = 120
+                humanoid.JumpPower = 120
+            else
+                humanoid.WalkSpeed = 16
+                humanoid.JumpPower = 50
+            end
+        end
     end,
 })
 
@@ -155,6 +116,87 @@ MainTab:CreateButton({
     Name = "Spectate Player",
     Callback = function()
         loadstring(game:HttpGet('https://pastebin.com/raw/zjAa6w2c'))()
+    end,
+})
+
+-- ESP Toggle
+local espEnabled = false
+local espInstances = {}
+
+local function enableESP()
+    for _, player in ipairs(game.Players:GetPlayers()) do
+        if player ~= game.Players.LocalPlayer and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+            local espBox = Instance.new("BoxHandleAdornment")
+            espBox.Size = Vector3.new(4, 6, 4)
+            espBox.Adornee = player.Character.HumanoidRootPart
+            espBox.AlwaysOnTop = true
+            espBox.ZIndex = 5
+            espBox.Color3 = Color3.new(1, 0, 0)
+            espBox.Transparency = 0.5
+            espBox.Parent = player.Character.HumanoidRootPart
+            table.insert(espInstances, espBox)
+        end
+    end
+end
+
+local function disableESP()
+    for _, espBox in pairs(espInstances) do
+        if espBox and espBox.Parent then
+            espBox:Destroy()
+        end
+    end
+    espInstances = {}
+end
+
+MainTab:CreateToggle({
+    Name = "ESP Toggle",
+    CurrentValue = false,
+    Callback = function(state)
+        espEnabled = state
+        if espEnabled then
+            enableESP()
+        else
+            disableESP()
+        end
+    end,
+})
+
+-- Teleport Tool Button
+MainTab:CreateButton({
+    Name = "Teleport Tool",
+    Callback = function()
+        local tool = Instance.new("Tool")
+        tool.Name = "Teleport Tool"
+        tool.RequiresHandle = false
+        tool.Activated:Connect(function()
+            local mouse = game.Players.LocalPlayer:GetMouse()
+            local character = game.Players.LocalPlayer.Character
+            if character and mouse then
+                character:MoveTo(mouse.Hit.p)
+            end
+        end)
+        tool.Parent = game.Players.LocalPlayer.Backpack
+        print("Teleport Tool given.")
+    end,
+})
+
+-- Admin Tab
+local AdminTab = Window:CreateTab("Admin", 4483362458)
+local Section = AdminTab:CreateSection("Admin")
+
+-- Admin Button
+AdminTab:CreateButton({
+   Name = "Admin",
+   Callback = function()
+      loadstring(game:HttpGet('https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source'))()
+   end,
+})
+
+-- Teleport GUI Button (Executes the script you provided)
+MainTab:CreateButton({
+    Name = "Teleport GUI",
+    Callback = function()
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/Tjhost/rbs/refs/heads/main/Sde.lua", true))()
     end,
 })
 
@@ -185,16 +227,12 @@ local function setupClickToCopy()
         if copyEnabled then
             for _, targetPlayer in ipairs(game.Players:GetPlayers()) do
                 if targetPlayer ~= player and targetPlayer.Character then
-                    local target = targetPlayer.Character:FindFirstChild("HumanoidRootPart")
-                    if target then
-                        local ray = Ray.new(mouse.UnitRay.Origin, mouse.UnitRay.Direction * 1000)
-                        local hit, position = workspace:FindPartOnRay(ray)
-                        if hit and hit:IsDescendantOf(targetPlayer.Character) then
-                            local textToCopy = "bang " .. targetPlayer.DisplayName
-                            copyToClipboard(textToCopy)
-                            print("Copied '" .. textToCopy .. "' to clipboard!")
-                            break
-                        end
+                    local distance = (player.Character.HumanoidRootPart.Position - targetPlayer.Character.HumanoidRootPart.Position).Magnitude
+                    if distance < 1000 then
+                        local textToCopy = "bang " .. targetPlayer.DisplayName
+                        copyToClipboard(textToCopy)
+                        print("Copied '" .. textToCopy .. "' to clipboard!")
+                        break
                     end
                 end
             end
@@ -202,38 +240,8 @@ local function setupClickToCopy()
     end)
 end
 
+-- Initialize click-to-copy functionality
 setupClickToCopy()
-
--- Admin Tab
-local AdminTab = Window:CreateTab("Admin", 4483362458)
-local Section = AdminTab:CreateSection("Admin")
-
--- Admin Button
-AdminTab:CreateButton({
-   Name = "Admin",
-   Callback = function()
-      loadstring(game:HttpGet('https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source'))()
-   end,
-})
-
--- Teleport Tool Button
-MainTab:CreateButton({
-    Name = "Teleport Tool",
-    Callback = function()
-        local tool = Instance.new("Tool")
-        tool.Name = "Teleport Tool"
-        tool.RequiresHandle = false
-        tool.Activated:Connect(function()
-            local mouse = game.Players.LocalPlayer:GetMouse()
-            local character = game.Players.LocalPlayer.Character
-            if character and mouse then
-                character:MoveTo(mouse.Hit.p)
-            end
-        end)
-        tool.Parent = game.Players.LocalPlayer.Backpack
-        print("Teleport Tool given.")
-    end,
-})
 
 -- Load configuration
 Rayfield:LoadConfiguration()
