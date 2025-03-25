@@ -315,7 +315,7 @@ button.Top = 15
 button.Width = 110
 button.Height = 40
 button.OnClick = skip
-button.Caption = "Orien Skip"
+button.Caption = "Nigger Skip"
 
 local button = createButton(template)
 button.left = 160
@@ -387,7 +387,7 @@ button.Top = 165
 button.Width = 110
 button.Height = 40
 button.OnClick = grvUp
-button.Caption = "Gravity (UP)"
+button.Caption = "Nigger"
 
 local button = createButton(template)
 button.left = 160
